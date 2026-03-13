@@ -1,6 +1,7 @@
 mod article_content;
 mod articles_list;
 mod batch;
+pub mod chyron;
 mod command_confirm;
 mod command_input;
 mod feeds_list;
@@ -179,6 +180,8 @@ pub struct App {
     state: AppState,
     #[allow(dead_code)] // used in upcoming chyron rendering tasks
     mode: AppMode,
+    #[allow(dead_code)] // used in upcoming chyron rendering tasks
+    chyron_state: chyron::ChyronState,
 
     config: Arc<Config>,
     news_flash_utils: Arc<NewsFlashUtils>,
@@ -222,6 +225,7 @@ impl App {
         let app = Self {
             state: AppState::FeedSelection,
             mode,
+            chyron_state: chyron::ChyronState::new(config.chyron.default_speed),
             config: Arc::clone(&config_arc),
             news_flash_utils: news_flash_utils.clone(),
             is_running: true,
