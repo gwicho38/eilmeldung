@@ -99,6 +99,37 @@ impl TickerState {
         }
     }
 
+    /// Calculate the display width of the first item in the queue (including separator).
+    /// When scroll_offset exceeds this, the item has scrolled off screen.
+    pub fn first_item_width(&self) -> usize {
+        if let Some(item) = self.queue.front() {
+            // "[CATEGORY] Title" + separator " ███ "
+            let tag = format!("[{}] ", item.category);
+            tag.len() + item.title.len() + 5 // 5 = " ███ " separator
+        } else {
+            0
+        }
+    }
+
+    /// Check if the first item has scrolled off screen and needs to be popped.
+    /// Returns the popped item if one was removed.
+    pub fn check_and_pop_scrolled_off(&mut self) -> Option<TickerItem> {
+        let width = self.first_item_width();
+        if width > 0 && self.scroll_offset >= width {
+            self.scroll_offset -= width;
+            let item = self.queue.pop_front();
+            if let Some(ref popped) = item {
+                if self.history.len() >= 20 {
+                    self.history.pop_back();
+                }
+                self.history.push_front(popped.clone());
+            }
+            item
+        } else {
+            None
+        }
+    }
+
     /// Get the URL of the currently highlighted item (for opening in browser).
     pub fn highlighted_url(&self) -> Option<&str> {
         if self.paused {

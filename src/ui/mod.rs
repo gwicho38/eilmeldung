@@ -667,6 +667,14 @@ impl MessageReceiver for App {
                     )
                     .await;
                 }
+
+                // Check for items that have scrolled off screen
+                if self.mode == AppMode::Chyron {
+                    while let Some(_popped) = self.chyron_state.ticker.check_and_pop_scrolled_off() {
+                        // Mark-as-read could be done here using _popped.article_id
+                        // For v1, we just track them in history
+                    }
+                }
             }
 
             Message::Event(Event::AsyncImportOpmlFinished) => {
