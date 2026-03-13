@@ -217,6 +217,12 @@ impl Config {
     fn validate(&mut self) -> color_eyre::Result<()> {
         self.validate_input_config()?;
 
+        if self.chyron.default_speed == 0 || self.chyron.default_speed > 10 {
+            return Err(color_eyre::eyre::eyre!(
+                "chyron.default_speed must be between 1 and 10"
+            ));
+        }
+
         if let Some(sync_interval) = self.sync_every_minutes
             && sync_interval == 0
         {
