@@ -29,7 +29,7 @@ pub fn render_chyron_category_grid(
         2
     };
 
-    let row_count = (categories.len() + col_count - 1) / col_count;
+    let row_count = categories.len().div_ceil(col_count);
     let cell_width = area.width / col_count as u16;
     let cell_height = if row_count > 0 {
         (area.height / row_count as u16).max(3)
@@ -91,23 +91,23 @@ fn render_category_cell(
     }
 
     // Line 2: most recent headline (truncated)
-    if inner.height >= 2 {
-        if let Some(headline) = &category.latest_headline {
-            let truncated = truncate_str(headline, inner.width as usize);
-            let headline_line = Line::from(Span::styled(
-                truncated,
-                Style::default().fg(Color::DarkGray),
-            ));
-            headline_line.render(Rect::new(inner.x, inner.y + 1, inner.width, 1), buf);
-        }
+    if inner.height >= 2 && let Some(headline) = &category.latest_headline {
+        let truncated = truncate_str(headline, inner.width as usize);
+        let headline_line = Line::from(Span::styled(
+            truncated,
+            Style::default().fg(Color::DarkGray),
+        ));
+        headline_line.render(Rect::new(inner.x, inner.y + 1, inner.width, 1), buf);
     }
 }
 
 fn truncate_str(s: &str, max_len: usize) -> String {
-    if s.len() <= max_len {
+    let char_count = s.chars().count();
+    if char_count <= max_len {
         s.to_string()
     } else if max_len > 1 {
-        format!("{}…", &s[..max_len - 1])
+        let truncated: String = s.chars().take(max_len - 1).collect();
+        format!("{truncated}…")
     } else {
         String::new()
     }

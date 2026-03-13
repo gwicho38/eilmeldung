@@ -7,6 +7,7 @@ use crate::prelude::*;
 /// Render the single-line chyron status bar.
 ///
 /// Content: `░ EILMELDUNG CHYRON ░  {feed_count} feeds │ {unread_count} unread │ {●/○} │ synced {timestamp}`
+#[allow(clippy::too_many_arguments)]
 pub fn render_chyron_status_bar(
     area: Rect,
     buf: &mut Buffer,

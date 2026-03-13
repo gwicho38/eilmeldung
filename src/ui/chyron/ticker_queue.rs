@@ -8,7 +8,6 @@ use crate::prelude::*;
 use super::ticker::TickerItem;
 
 /// Category metadata for round-robin cycling.
-#[allow(dead_code)] // fields used in upcoming chyron data-flow tasks
 pub struct CategoryInfo {
     pub name: String,
     pub id: CategoryID,
@@ -59,7 +58,6 @@ fn resolve_color(name: &str) -> Option<Color> {
 /// 2. `get_categories()` returns `(Vec<Category>, Vec<CategoryMapping>)` (sync)
 /// 3. `unread_count_feed_map(true)?` returns `HashMap<FeedID, i64>` (sync)
 /// 4. Aggregate feed-level counts into category-level counts via FeedMapping
-#[allow(dead_code)] // called in upcoming chyron data-flow tasks
 pub async fn build_category_list(
     news_flash_utils: &NewsFlashUtils,
     config: &Config,
@@ -149,7 +147,6 @@ pub async fn build_category_list(
 }
 
 /// Fetch the next batch of unread headlines from the given category.
-#[allow(dead_code)] // called in upcoming chyron data-flow tasks
 pub async fn fetch_category_headlines(
     news_flash_utils: &NewsFlashUtils,
     category: &CategoryInfo,
@@ -196,7 +193,6 @@ pub async fn fetch_category_headlines(
 
 /// Refill the ticker queue using round-robin category cycling.
 /// Called when queue depth drops below `min_depth`.
-#[allow(dead_code)] // called in upcoming chyron data-flow tasks
 pub async fn refill_queue(
     queue: &mut VecDeque<TickerItem>,
     categories: &[CategoryInfo],

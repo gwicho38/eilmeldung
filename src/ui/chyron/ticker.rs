@@ -9,19 +9,20 @@ use crate::prelude::*;
 
 /// A single headline in the ticker queue.
 #[derive(Debug, Clone)]
-#[allow(dead_code)] // fields used in upcoming chyron rendering tasks
 pub struct TickerItem {
     pub category: String,
     pub color: Color,
+    #[allow(dead_code)] // planned for ticker display
     pub feed_name: String,
     pub title: String,
     pub url: String,
+    #[allow(dead_code)] // planned for mark-as-read in v2
     pub article_id: Option<news_flash::models::ArticleID>,
+    #[allow(dead_code)] // planned for time display in v2
     pub published: Option<DateTime<Utc>>,
 }
 
 /// Mutable state for the scrolling ticker.
-#[allow(dead_code)] // fields used in upcoming chyron rendering tasks
 pub struct TickerState {
     pub queue: VecDeque<TickerItem>,
     pub history: VecDeque<TickerItem>,
@@ -47,7 +48,7 @@ impl TickerState {
 
     /// Advance the scroll offset by `speed` characters. Called on each tick when not paused.
     pub fn advance(&mut self) {
-        if !self.paused {
+        if !self.paused && !self.queue.is_empty() {
             self.scroll_offset += self.speed as usize;
         }
     }
@@ -85,17 +86,6 @@ impl TickerState {
         } else if let Some(item) = self.history.pop_front() {
             self.queue.push_front(item);
             // highlight_index stays at 0 (now pointing to the recovered item)
-        }
-    }
-
-    /// Pop the frontmost item (scrolled off-screen) into history.
-    #[allow(dead_code)] // called in upcoming chyron tick handler
-    pub fn pop_front_to_history(&mut self) {
-        if let Some(item) = self.queue.pop_front() {
-            if self.history.len() >= 20 {
-                self.history.pop_back();
-            }
-            self.history.push_front(item);
         }
     }
 
@@ -194,7 +184,7 @@ pub fn render_ticker(
     // For scrolling: we render from scroll_offset onward
     // Ratatui's Paragraph with scroll handles this
     let paragraph = Paragraph::new(full_line)
-        .scroll((0, state.scroll_offset as u16));
+        .scroll((0, state.scroll_offset.min(u16::MAX as usize) as u16));
 
     paragraph.render(area, buf);
 }

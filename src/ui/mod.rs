@@ -308,6 +308,11 @@ impl App {
         self.message_sender
             .send(Message::Event(Event::ApplicationStarted))?;
 
+        // Load initial chyron data when launched with --chyron
+        if self.mode == AppMode::Chyron {
+            self.refresh_chyron_data().await;
+        }
+
         debug!("Select feeds panel");
         self.message_sender
             .send(Message::Command(Command::PanelFocus(Panel::FeedList)))?;
