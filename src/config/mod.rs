@@ -8,6 +8,7 @@ mod share_target;
 mod theme;
 
 use std::{
+    collections::HashMap,
     env,
     path::{Path, PathBuf},
 };
@@ -20,7 +21,7 @@ pub mod prelude {
     pub use super::feed_list_content_identfier::{
         FeedListContentIdentifier, FeedListItemType, LabeledQuery,
     };
-    pub use super::input_config::InputConfig;
+    pub use super::input_config::{ChyronInputConfig, InputConfig};
     pub use super::login_configuration::LoginConfiguration;
     pub use super::paths::{CONFIG_FILE, PROJECT_DIRS};
     pub use super::resolve_eilmeldung_config_dir;
@@ -109,6 +110,26 @@ impl ArticleScope {
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
+#[serde(default)]
+pub struct ChyronConfig {
+    pub default_speed: u8,
+    pub mark_as_read: bool,
+    pub category_colors: HashMap<String, String>,
+    pub input_config: ChyronInputConfig,
+}
+
+impl Default for ChyronConfig {
+    fn default() -> Self {
+        Self {
+            default_speed: 5,
+            mark_as_read: true,
+            category_colors: HashMap::new(),
+            input_config: ChyronInputConfig::default(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, serde::Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct Config {
     pub input_config: InputConfig,
@@ -188,6 +209,8 @@ pub struct Config {
     pub cli: CliConfig,
 
     pub enable_mouse: bool,
+
+    pub chyron: ChyronConfig,
 }
 
 impl Config {
@@ -338,6 +361,7 @@ impl Default for Config {
             login_setup: None,
             cli: CliConfig::default(),
             enable_mouse: false,
+            chyron: ChyronConfig::default(),
         }
     }
 }

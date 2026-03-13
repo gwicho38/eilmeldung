@@ -152,3 +152,33 @@ impl InputConfig {
         })
     }
 }
+
+#[derive(Clone, Debug, serde::Deserialize)]
+#[serde(rename_all = "snake_case", default)]
+pub struct ChyronInputConfig {
+    pub mappings: IndexMap<KeySequence, CommandSequence>,
+}
+
+impl Default for ChyronInputConfig {
+    fn default() -> Self {
+        Self {
+            mappings: generate_default_chyron_commands(),
+        }
+    }
+}
+
+pub fn generate_default_chyron_commands() -> IndexMap<KeySequence, CommandSequence> {
+    cmd_mappings! [
+        "p"         => "chyronpause",
+        "+"         => "chyronspeedup",
+        "="         => "chyronspeedup",
+        "-"         => "chyronspeeddown",
+        "enter"     => "chyronopencurrent",
+        "left"      => "chyronprevheadline",
+        "right"     => "chyronnextheadline",
+        "s"         => "sync",
+        "C"         => "chyrontoggle",
+        "q"         => "quit",
+        "C-c"       => "quit",
+    ]
+}
