@@ -78,7 +78,6 @@ impl InputCommandGenerator {
         }
     }
 
-    #[allow(dead_code)] // used in upcoming mode-switching tasks
     pub fn set_mode(&mut self, mode: AppMode) {
         self.mode = mode;
     }

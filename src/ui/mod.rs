@@ -333,12 +333,19 @@ impl App {
     }
 
     fn tick(&mut self) -> bool {
+        // Always update throbber when async operation is running (both modes)
         if self.news_flash_utils.is_async_operation_running() {
             trace!("Async operation running, updating throbber");
             self.async_operation_throbber.calc_next();
-            return true;
         }
-        false
+
+        if self.mode == AppMode::Chyron {
+            self.chyron_state.ticker.advance();
+            return true; // always redraw in chyron mode (ticker is animating)
+        }
+
+        // Reader mode: only redraw when throbber is active
+        self.news_flash_utils.is_async_operation_running()
     }
 
     async fn process_commands(
@@ -776,6 +783,54 @@ impl MessageReceiver for App {
                 self.batch_processor.show_popup();
                 self.message_sender
                     .send(Message::Batch(self.config.after_sync_commands.to_vec()))?;
+            }
+
+            Message::Command(ChyronToggle) => {
+                match self.mode {
+                    AppMode::Reader => {
+                        self.mode = AppMode::Chyron;
+                        self.chyron_state =
+                            chyron::ChyronState::new(self.config.chyron.default_speed);
+                        self.input_command_generator.set_mode(AppMode::Chyron);
+                    }
+                    AppMode::Chyron => {
+                        self.mode = AppMode::Reader;
+                        self.input_command_generator.set_mode(AppMode::Reader);
+                    }
+                }
+            }
+
+            Message::Command(ChyronPause) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.toggle_pause();
+            }
+
+            Message::Command(ChyronSpeedUp) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.speed_up();
+            }
+
+            Message::Command(ChyronSpeedDown) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.speed_down();
+            }
+
+            Message::Command(ChyronOpenCurrent) if self.mode == AppMode::Chyron => {
+                if let Some(url) = self.chyron_state.ticker.highlighted_url() {
+                    let url_owned = url.to_string();
+                    if let Err(e) = webbrowser::open(&url_owned) {
+                        tooltip(
+                            &self.message_sender,
+                            &*format!("Failed to open browser: {}", e),
+                            TooltipFlavor::Error,
+                        )?;
+                    }
+                }
+            }
+
+            Message::Command(ChyronPrevHeadline) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.prev_headline();
+            }
+
+            Message::Command(ChyronNextHeadline) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.next_headline();
             }
 
             _ => {

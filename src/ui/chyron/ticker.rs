@@ -46,14 +46,12 @@ impl TickerState {
     }
 
     /// Advance the scroll offset by `speed` characters. Called on each tick when not paused.
-    #[allow(dead_code)] // called in upcoming chyron tick handler
     pub fn advance(&mut self) {
         if !self.paused {
             self.scroll_offset += self.speed as usize;
         }
     }
 
-    #[allow(dead_code)] // called in upcoming chyron command handler
     pub fn toggle_pause(&mut self) {
         self.paused = !self.paused;
         if self.paused {
@@ -61,18 +59,15 @@ impl TickerState {
         }
     }
 
-    #[allow(dead_code)] // called in upcoming chyron command handler
     pub fn speed_up(&mut self) {
         self.speed = (self.speed + 1).min(10);
     }
 
-    #[allow(dead_code)] // called in upcoming chyron command handler
     pub fn speed_down(&mut self) {
         self.speed = self.speed.saturating_sub(1).max(1);
     }
 
     /// Step to the next headline when paused.
-    #[allow(dead_code)] // called in upcoming chyron command handler
     pub fn next_headline(&mut self) {
         if self.paused && !self.queue.is_empty() {
             self.highlight_index = (self.highlight_index + 1).min(self.queue.len() - 1);
@@ -81,7 +76,6 @@ impl TickerState {
 
     /// Step to the previous headline when paused.
     /// If at the front of the queue, pulls from history.
-    #[allow(dead_code)] // called in upcoming chyron command handler
     pub fn prev_headline(&mut self) {
         if !self.paused {
             return;
@@ -106,7 +100,6 @@ impl TickerState {
     }
 
     /// Get the URL of the currently highlighted item (for opening in browser).
-    #[allow(dead_code)] // called in upcoming chyron command handler
     pub fn highlighted_url(&self) -> Option<&str> {
         if self.paused {
             self.queue
