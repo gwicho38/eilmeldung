@@ -131,7 +131,7 @@ async fn main() -> color_eyre::Result<()> {
         ConnectivityMonitor::new(news_flash_utils.clone(), message_sender.clone());
 
     // create the main app
-    let app = App::new(config.clone(), news_flash_utils.clone(), message_sender);
+    let app = App::new(config.clone(), news_flash_utils.clone(), message_sender, AppMode::Reader);
 
     info!("Initializing terminal");
     let terminal = ratatui::init();

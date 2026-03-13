@@ -17,7 +17,7 @@ pub mod prelude {
     pub use super::feeds_list::prelude::*;
     pub use super::help_popup::HelpPopup;
     pub use super::tooltip::{Tooltip, TooltipFlavor, tooltip};
-    pub use super::{App, AppState};
+    pub use super::{App, AppMode, AppState};
 }
 
 use crate::prelude::*;
@@ -39,6 +39,13 @@ pub enum AppState {
     ArticleSelection,
     ArticleContent,
     ArticleContentDistractionFree,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum AppMode {
+    #[default]
+    Reader,
+    Chyron,
 }
 
 impl From<Panel> for AppState {
@@ -170,6 +177,8 @@ impl PanelAreas {
 
 pub struct App {
     state: AppState,
+    #[allow(dead_code)] // used in upcoming chyron rendering tasks
+    mode: AppMode,
 
     config: Arc<Config>,
     news_flash_utils: Arc<NewsFlashUtils>,
@@ -204,6 +213,7 @@ impl App {
         config: Arc<Config>,
         news_flash_utils: Arc<NewsFlashUtils>,
         message_sender: UnboundedSender<Message>,
+        mode: AppMode,
     ) -> Self {
         debug!("Creating new App instance");
         let config_arc = config.clone();
@@ -211,6 +221,7 @@ impl App {
         debug!("Initializing UI components");
         let app = Self {
             state: AppState::FeedSelection,
+            mode,
             config: Arc::clone(&config_arc),
             news_flash_utils: news_flash_utils.clone(),
             is_running: true,
