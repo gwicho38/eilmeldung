@@ -1,7 +1,11 @@
 use std::collections::VecDeque;
 
 use chrono::{DateTime, Utc};
+use ratatui::prelude::*;
 use ratatui::style::Color;
+use ratatui::widgets::Paragraph;
+
+use crate::prelude::*;
 
 /// A single headline in the ticker queue.
 #[derive(Debug, Clone)]
@@ -112,4 +116,62 @@ impl TickerState {
             None
         }
     }
+}
+
+/// Render the scrolling ticker line.
+///
+/// Format: `[CATEGORY] Title ███ [CATEGORY] Title ███ ...`
+/// The separator is 3 block characters.
+#[allow(dead_code)] // Called in Task 11
+pub fn render_ticker(
+    area: Rect,
+    buf: &mut Buffer,
+    state: &TickerState,
+    config: &Config,
+) {
+    if state.queue.is_empty() {
+        let msg = Line::from(Span::styled(
+            "No new headlines. Press s to sync.",
+            config.theme.paragraph(),
+        ));
+        msg.render(area, buf);
+        return;
+    }
+
+    let separator = "███";
+    let mut spans: Vec<Span<'_>> = Vec::new();
+
+    for (idx, item) in state.queue.iter().enumerate() {
+        if !spans.is_empty() {
+            spans.push(Span::styled(
+                format!(" {} ", separator),
+                Style::default().fg(Color::DarkGray),
+            ));
+        }
+
+        let tag_style = if state.paused && idx == state.highlight_index {
+            Style::default().fg(Color::Black).bg(item.color).bold()
+        } else {
+            Style::default().fg(item.color).bold()
+        };
+
+        let title_style = if state.paused && idx == state.highlight_index {
+            Style::default().fg(Color::Black).bg(Color::White)
+        } else {
+            Style::default().fg(Color::White)
+        };
+
+        spans.push(Span::styled(format!("[{}] ", item.category), tag_style));
+        spans.push(Span::styled(item.title.clone(), title_style));
+    }
+
+    // Build the full text line and handle horizontal scrolling
+    let full_line = Line::from(spans);
+
+    // For scrolling: we render from scroll_offset onward
+    // Ratatui's Paragraph with scroll handles this
+    let paragraph = Paragraph::new(full_line)
+        .scroll((0, state.scroll_offset as u16));
+
+    paragraph.render(area, buf);
 }
