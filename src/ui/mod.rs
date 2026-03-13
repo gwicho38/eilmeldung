@@ -233,6 +233,7 @@ impl App {
             input_command_generator: InputCommandGenerator::new(
                 config_arc.clone(),
                 message_sender.clone(),
+                mode,
             ),
             feed_list: FeedList::new(
                 config_arc.clone(),
