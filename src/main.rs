@@ -131,7 +131,8 @@ async fn main() -> color_eyre::Result<()> {
         ConnectivityMonitor::new(news_flash_utils.clone(), message_sender.clone());
 
     // create the main app
-    let app = App::new(config.clone(), news_flash_utils.clone(), message_sender, AppMode::Reader);
+    let mode = if *cli_args.chyron() { AppMode::Chyron } else { AppMode::Reader };
+    let app = App::new(config.clone(), news_flash_utils.clone(), message_sender, mode);
 
     info!("Initializing terminal");
     let terminal = ratatui::init();
