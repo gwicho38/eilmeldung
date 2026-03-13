@@ -558,6 +558,44 @@ impl App {
 
         Ok(())
     }
+
+    async fn refresh_chyron_data(&mut self) {
+        if self.mode != AppMode::Chyron {
+            return;
+        }
+
+        // Refresh category list
+        self.chyron_state.categories =
+            chyron::ticker_queue::build_category_list(&self.news_flash_utils, &self.config).await;
+
+        self.chyron_state.total_unread = self
+            .chyron_state
+            .categories
+            .iter()
+            .map(|c| c.unread_count)
+            .sum();
+
+        // Get actual feed count
+        let news_flash = self.news_flash_utils.news_flash_lock.read().await;
+        self.chyron_state.feed_count = news_flash
+            .get_feeds()
+            .map(|feeds| feeds.0.len())
+            .unwrap_or(0);
+        drop(news_flash);
+
+        self.chyron_state.last_sync_time = Some(chrono::Utc::now());
+
+        // Refill ticker queue
+        chyron::ticker_queue::refill_queue(
+            &mut self.chyron_state.ticker.queue,
+            &self.chyron_state.categories,
+            &mut self.chyron_state.ticker.current_category_index,
+            &self.news_flash_utils,
+            5,
+            10,
+        )
+        .await;
+    }
 }
 
 impl MessageReceiver for App {
@@ -616,6 +654,19 @@ impl MessageReceiver for App {
 
             Message::Event(Tick) => {
                 needs_redraw = self.tick();
+
+                // In chyron mode, check if queue needs refilling
+                if self.mode == AppMode::Chyron && self.chyron_state.ticker.queue.len() < 5 {
+                    chyron::ticker_queue::refill_queue(
+                        &mut self.chyron_state.ticker.queue,
+                        &self.chyron_state.categories,
+                        &mut self.chyron_state.ticker.current_category_index,
+                        &self.news_flash_utils,
+                        5,
+                        10,
+                    )
+                    .await;
+                }
             }
 
             Message::Event(Event::AsyncImportOpmlFinished) => {
@@ -783,6 +834,9 @@ impl MessageReceiver for App {
                 self.batch_processor.show_popup();
                 self.message_sender
                     .send(Message::Batch(self.config.after_sync_commands.to_vec()))?;
+
+                // Refresh chyron data after sync
+                self.refresh_chyron_data().await;
             }
 
             Message::Command(ChyronToggle) => {
@@ -792,6 +846,7 @@ impl MessageReceiver for App {
                         self.chyron_state =
                             chyron::ChyronState::new(self.config.chyron.default_speed);
                         self.input_command_generator.set_mode(AppMode::Chyron);
+                        self.refresh_chyron_data().await;
                     }
                     AppMode::Chyron => {
                         self.mode = AppMode::Reader;
