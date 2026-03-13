@@ -1,6 +1,7 @@
 mod article_content;
 mod articles_list;
 mod batch;
+pub mod chyron;
 mod command_confirm;
 mod command_input;
 mod feeds_list;
@@ -17,7 +18,7 @@ pub mod prelude {
     pub use super::feeds_list::prelude::*;
     pub use super::help_popup::HelpPopup;
     pub use super::tooltip::{Tooltip, TooltipFlavor, tooltip};
-    pub use super::{App, AppState};
+    pub use super::{App, AppMode, AppState};
 }
 
 use crate::prelude::*;
@@ -25,6 +26,8 @@ use crate::prelude::*;
 use chrono::TimeDelta;
 use log::{debug, error, info, trace, warn};
 use news_flash::error::{FeedApiError, NewsFlashError};
+use ratatui::crossterm::event::{MouseButton, MouseEventKind};
+use ratatui::prelude::Rect;
 use ratatui::DefaultTerminal;
 use std::{fmt::Display, path::Path, str::FromStr, sync::Arc, time::Duration};
 use throbber_widgets_tui::ThrobberState;
@@ -37,6 +40,13 @@ pub enum AppState {
     ArticleSelection,
     ArticleContent,
     ArticleContentDistractionFree,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum AppMode {
+    #[default]
+    Reader,
+    Chyron,
 }
 
 impl From<Panel> for AppState {
@@ -122,8 +132,54 @@ impl AppState {
     }
 }
 
+/// Stores the last rendered areas of the three main panels for mouse hit-testing.
+#[derive(Default, Clone, Copy)]
+struct PanelAreas {
+    feed_list: Rect,
+    articles_list: Rect,
+    article_content: Rect,
+}
+
+impl PanelAreas {
+    fn panel_at(&self, col: u16, row: u16) -> Option<Panel> {
+        if self.feed_list.contains((col, row).into()) {
+            Some(Panel::FeedList)
+        } else if self.articles_list.contains((col, row).into()) {
+            Some(Panel::ArticleList)
+        } else if self.article_content.contains((col, row).into()) {
+            Some(Panel::ArticleContent)
+        } else {
+            None
+        }
+    }
+
+    /// Returns the row offset relative to the inner area of the articles panel (excluding border).
+    fn article_row_offset(&self, row: u16) -> Option<u16> {
+        let area = self.articles_list;
+        // Account for the border (1 row top)
+        let inner_top = area.y + 1;
+        let inner_bottom = area.y + area.height.saturating_sub(1);
+        if row >= inner_top && row < inner_bottom {
+            Some(row - inner_top)
+        } else {
+            None
+        }
+    }
+
+    /// Returns true if the row is on the horizontal border between the articles list and article content.
+    fn is_on_horizontal_border(&self, col: u16, row: u16) -> bool {
+        // The border is at the bottom edge of articles_list / top edge of article_content
+        let border_row = self.articles_list.y + self.articles_list.height;
+        let in_column_range = col >= self.articles_list.x
+            && col < self.articles_list.x + self.articles_list.width;
+        row == border_row && in_column_range
+    }
+}
+
 pub struct App {
     state: AppState,
+    mode: AppMode,
+    chyron_state: chyron::ChyronState,
 
     config: Arc<Config>,
     news_flash_utils: Arc<NewsFlashUtils>,
@@ -144,6 +200,13 @@ pub struct App {
     is_offline: bool,
 
     is_running: bool,
+
+    panel_areas: PanelAreas,
+
+    /// When Some, the user is dragging the horizontal border; stores the initial row of the drag.
+    drag_resize_active: bool,
+    /// Override for the articles/content split height (absolute row count for articles list).
+    articles_height_override: Option<u16>,
 }
 
 impl App {
@@ -151,6 +214,7 @@ impl App {
         config: Arc<Config>,
         news_flash_utils: Arc<NewsFlashUtils>,
         message_sender: UnboundedSender<Message>,
+        mode: AppMode,
     ) -> Self {
         debug!("Creating new App instance");
         let config_arc = config.clone();
@@ -158,6 +222,8 @@ impl App {
         debug!("Initializing UI components");
         let app = Self {
             state: AppState::FeedSelection,
+            mode,
+            chyron_state: chyron::ChyronState::new(config.chyron.default_speed),
             config: Arc::clone(&config_arc),
             news_flash_utils: news_flash_utils.clone(),
             is_running: true,
@@ -165,6 +231,7 @@ impl App {
             input_command_generator: InputCommandGenerator::new(
                 config_arc.clone(),
                 message_sender.clone(),
+                mode,
             ),
             feed_list: FeedList::new(
                 config_arc.clone(),
@@ -199,6 +266,9 @@ impl App {
             ),
             async_operation_throbber: ThrobberState::default(),
             is_offline: false,
+            panel_areas: PanelAreas::default(),
+            drag_resize_active: false,
+            articles_height_override: None,
         };
 
         info!("App instance created with initial state: FeedSelection");
@@ -238,6 +308,11 @@ impl App {
         self.message_sender
             .send(Message::Event(Event::ApplicationStarted))?;
 
+        // Load initial chyron data when launched with --chyron
+        if self.mode == AppMode::Chyron {
+            self.refresh_chyron_data().await;
+        }
+
         debug!("Select feeds panel");
         self.message_sender
             .send(Message::Command(Command::PanelFocus(Panel::FeedList)))?;
@@ -263,12 +338,19 @@ impl App {
     }
 
     fn tick(&mut self) -> bool {
+        // Always update throbber when async operation is running (both modes)
         if self.news_flash_utils.is_async_operation_running() {
             trace!("Async operation running, updating throbber");
             self.async_operation_throbber.calc_next();
-            return true;
         }
-        false
+
+        if self.mode == AppMode::Chyron {
+            self.chyron_state.ticker.advance();
+            return true; // always redraw in chyron mode (ticker is animating)
+        }
+
+        // Reader mode: only redraw when throbber is active
+        self.news_flash_utils.is_async_operation_running()
     }
 
     async fn process_commands(
@@ -386,6 +468,139 @@ impl App {
     fn logout(&self) {
         self.news_flash_utils.logout();
     }
+
+    fn handle_mouse_event(
+        &mut self,
+        mouse_event: ratatui::crossterm::event::MouseEvent,
+    ) -> color_eyre::Result<()> {
+        // Skip mouse events when a modal/dialog is active
+        if self.command_input.is_active()
+            || self.command_confirm.is_active()
+            || self.help_popup.is_modal().unwrap_or(false)
+        {
+            return Ok(());
+        }
+
+        let col = mouse_event.column;
+        let row = mouse_event.row;
+
+        match mouse_event.kind {
+            MouseEventKind::Down(MouseButton::Left) => {
+                // Check if clicking on the horizontal border to start a drag-resize
+                if self.panel_areas.is_on_horizontal_border(col, row) {
+                    self.drag_resize_active = true;
+                    return Ok(());
+                }
+
+                if let Some(panel) = self.panel_areas.panel_at(col, row) {
+                    // Focus the clicked panel
+                    let target_state: AppState = panel.into();
+                    if self.state != target_state {
+                        self.switch_state(target_state)?;
+                    }
+
+                    match panel {
+                        Panel::ArticleList => {
+                            if let Some(row_offset) = self.panel_areas.article_row_offset(row) {
+                                self.message_sender.send(Message::Event(
+                                    Event::MouseArticleClick(row_offset),
+                                ))?;
+                            }
+                        }
+                        Panel::FeedList => {
+                            self.message_sender
+                                .send(Message::Event(Event::MouseFeedClick(col, row)))?;
+                        }
+                        _ => {}
+                    }
+
+                    self.message_sender
+                        .send(Message::Command(Command::Redraw))?;
+                }
+            }
+
+            MouseEventKind::Drag(MouseButton::Left) => {
+                if self.drag_resize_active {
+                    // Calculate the new articles list height based on drag position
+                    let articles_top = self.panel_areas.articles_list.y;
+                    let content_bottom = self.panel_areas.article_content.y
+                        + self.panel_areas.article_content.height;
+                    let total_height = content_bottom.saturating_sub(articles_top);
+                    // Clamp: minimum 3 rows for each panel
+                    let new_articles_height = row
+                        .saturating_sub(articles_top)
+                        .clamp(3, total_height.saturating_sub(3));
+                    self.articles_height_override = Some(new_articles_height);
+                    self.message_sender
+                        .send(Message::Command(Command::Redraw))?;
+                }
+            }
+
+            MouseEventKind::Up(MouseButton::Left) => {
+                self.drag_resize_active = false;
+            }
+
+            MouseEventKind::ScrollDown => {
+                if let Some(panel) = self.panel_areas.panel_at(col, row) {
+                    self.message_sender
+                        .send(Message::Event(Event::MouseScrollDown(panel)))?;
+                    self.message_sender
+                        .send(Message::Command(Command::Redraw))?;
+                }
+            }
+
+            MouseEventKind::ScrollUp => {
+                if let Some(panel) = self.panel_areas.panel_at(col, row) {
+                    self.message_sender
+                        .send(Message::Event(Event::MouseScrollUp(panel)))?;
+                    self.message_sender
+                        .send(Message::Command(Command::Redraw))?;
+                }
+            }
+
+            _ => {}
+        }
+
+        Ok(())
+    }
+
+    async fn refresh_chyron_data(&mut self) {
+        if self.mode != AppMode::Chyron {
+            return;
+        }
+
+        // Refresh category list
+        self.chyron_state.categories =
+            chyron::ticker_queue::build_category_list(&self.news_flash_utils, &self.config).await;
+
+        self.chyron_state.total_unread = self
+            .chyron_state
+            .categories
+            .iter()
+            .map(|c| c.unread_count)
+            .sum();
+
+        // Get actual feed count
+        let news_flash = self.news_flash_utils.news_flash_lock.read().await;
+        self.chyron_state.feed_count = news_flash
+            .get_feeds()
+            .map(|feeds| feeds.0.len())
+            .unwrap_or(0);
+        drop(news_flash);
+
+        self.chyron_state.last_sync_time = Some(chrono::Utc::now());
+
+        // Refill ticker queue
+        chyron::ticker_queue::refill_queue(
+            &mut self.chyron_state.ticker.queue,
+            &self.chyron_state.categories,
+            &mut self.chyron_state.ticker.current_category_index,
+            &self.news_flash_utils,
+            5,
+            10,
+        )
+        .await;
+    }
 }
 
 impl MessageReceiver for App {
@@ -436,8 +651,35 @@ impl MessageReceiver for App {
                     .send(Message::Command(Command::Redraw))?;
             }
 
+            Message::Event(Event::Mouse(mouse_event)) => {
+                self.handle_mouse_event(*mouse_event)?;
+                // handle_mouse_event sends its own Redraw when needed (e.g. during drag)
+                needs_redraw = false;
+            }
+
             Message::Event(Tick) => {
                 needs_redraw = self.tick();
+
+                // In chyron mode, check if queue needs refilling
+                if self.mode == AppMode::Chyron && self.chyron_state.ticker.queue.len() < 5 {
+                    chyron::ticker_queue::refill_queue(
+                        &mut self.chyron_state.ticker.queue,
+                        &self.chyron_state.categories,
+                        &mut self.chyron_state.ticker.current_category_index,
+                        &self.news_flash_utils,
+                        5,
+                        10,
+                    )
+                    .await;
+                }
+
+                // Check for items that have scrolled off screen
+                if self.mode == AppMode::Chyron {
+                    while let Some(_popped) = self.chyron_state.ticker.check_and_pop_scrolled_off() {
+                        // Mark-as-read could be done here using _popped.article_id
+                        // For v1, we just track them in history
+                    }
+                }
             }
 
             Message::Event(Event::AsyncImportOpmlFinished) => {
@@ -605,6 +847,58 @@ impl MessageReceiver for App {
                 self.batch_processor.show_popup();
                 self.message_sender
                     .send(Message::Batch(self.config.after_sync_commands.to_vec()))?;
+
+                // Refresh chyron data after sync
+                self.refresh_chyron_data().await;
+            }
+
+            Message::Command(ChyronToggle) => {
+                match self.mode {
+                    AppMode::Reader => {
+                        self.mode = AppMode::Chyron;
+                        self.chyron_state =
+                            chyron::ChyronState::new(self.config.chyron.default_speed);
+                        self.input_command_generator.set_mode(AppMode::Chyron);
+                        self.refresh_chyron_data().await;
+                    }
+                    AppMode::Chyron => {
+                        self.mode = AppMode::Reader;
+                        self.input_command_generator.set_mode(AppMode::Reader);
+                    }
+                }
+            }
+
+            Message::Command(ChyronPause) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.toggle_pause();
+            }
+
+            Message::Command(ChyronSpeedUp) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.speed_up();
+            }
+
+            Message::Command(ChyronSpeedDown) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.speed_down();
+            }
+
+            Message::Command(ChyronOpenCurrent) if self.mode == AppMode::Chyron => {
+                if let Some(url) = self.chyron_state.ticker.highlighted_url() {
+                    let url_owned = url.to_string();
+                    if let Err(e) = webbrowser::open(&url_owned) {
+                        tooltip(
+                            &self.message_sender,
+                            &*format!("Failed to open browser: {}", e),
+                            TooltipFlavor::Error,
+                        )?;
+                    }
+                }
+            }
+
+            Message::Command(ChyronPrevHeadline) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.prev_headline();
+            }
+
+            Message::Command(ChyronNextHeadline) if self.mode == AppMode::Chyron => {
+                self.chyron_state.ticker.next_headline();
             }
 
             _ => {

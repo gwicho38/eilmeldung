@@ -10,7 +10,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use log::{info, trace};
-use ratatui::crossterm::event;
+use ratatui::crossterm::event::{self, MouseEventKind};
 use ratatui::text::{Line, Span, Text};
 use throbber_widgets_tui::{Throbber, ThrobberState, VERTICAL_BLOCK};
 use tokio::sync::mpsc::UnboundedSender;
@@ -34,6 +34,13 @@ pub fn input_reader(message_sender: UnboundedSender<Message>) -> color_eyre::Res
                 trace!("resized to {width} {height}");
                 message_sender.send(Message::Event(Event::Resized(width, height)))?;
             }
+            event::Event::Mouse(mouse_event) => {
+                // Filter out Moved events — we only care about clicks, drags, and scrolls
+                if !matches!(mouse_event.kind, MouseEventKind::Moved) {
+                    trace!("mouse event: {:?}", mouse_event);
+                    message_sender.send(Message::Event(Event::Mouse(mouse_event)))?;
+                }
+            }
             event => trace!("ignoring event {:?}", event),
         }
     }
@@ -44,6 +51,7 @@ pub struct InputCommandGenerator {
     message_sender: UnboundedSender<Message>,
     key_sequence: KeySequence,
     last_input_instant: Instant,
+    mode: AppMode,
 }
 
 impl MessageReceiver for InputCommandGenerator {
@@ -60,12 +68,24 @@ impl MessageReceiver for InputCommandGenerator {
     }
 }
 impl InputCommandGenerator {
-    pub fn new(config: Arc<Config>, message_sender: UnboundedSender<Message>) -> Self {
+    pub fn new(config: Arc<Config>, message_sender: UnboundedSender<Message>, mode: AppMode) -> Self {
         Self {
             config,
             message_sender,
             key_sequence: KeySequence::default(),
             last_input_instant: Instant::now(),
+            mode,
+        }
+    }
+
+    pub fn set_mode(&mut self, mode: AppMode) {
+        self.mode = mode;
+    }
+
+    fn active_mappings(&self) -> &indexmap::IndexMap<KeySequence, CommandSequence> {
+        match self.mode {
+            AppMode::Reader => &self.config.input_config.mappings,
+            AppMode::Chyron => &self.config.chyron.input_config.mappings,
         }
     }
 
@@ -153,9 +173,11 @@ impl InputCommandGenerator {
         let now = Instant::now();
 
         let command = key.as_ref().and_then(|key| {
-            self.config
-                .input_config
-                .match_single_key_to_single_command(key)
+            let single_key_seq = KeySequence { keys: vec![*key] };
+            self.active_mappings().get(&single_key_seq).and_then(|command_sequence| {
+                let first = command_sequence.commands.first();
+                first.filter(|_| command_sequence.commands.len() == 1).cloned()
+            })
         });
 
         match command {
@@ -182,10 +204,11 @@ impl InputCommandGenerator {
             duration.as_millis() as f32 / self.config.input_config.timeout_millis as f32;
 
         // get key sequences which have a matching prefix
-        let mut prefix_matches = self
-            .config
-            .input_config
-            .mappings
+        let mappings = match self.mode {
+            AppMode::Reader => &self.config.input_config.mappings,
+            AppMode::Chyron => &self.config.chyron.input_config.mappings,
+        };
+        let mut prefix_matches = mappings
             .iter()
             .filter(|(other_key_sequence, _)| self.key_sequence.is_prefix_of(other_key_sequence))
             .collect::<Vec<_>>();
@@ -197,7 +220,7 @@ impl InputCommandGenerator {
         }
 
         if let Some(command_sequence) =
-            self.config.input_config.mappings.get(&self.key_sequence) // direct match
+            mappings.get(&self.key_sequence) // direct match
                 && (prefix_matches.len() == 1 || timeout || submit)
         {
             if command_sequence.commands.len() > 1 {
@@ -247,9 +270,7 @@ impl InputCommandGenerator {
         self.generate_input_help(
             None,
             &self
-                .config
-                .input_config
-                .mappings
+                .active_mappings()
                 .iter()
                 .collect::<Vec<(&KeySequence, &CommandSequence)>>(),
             0f32,

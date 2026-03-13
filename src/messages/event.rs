@@ -4,7 +4,10 @@ use news_flash::{
     error::NewsFlashError,
     models::{ArticleID, Category, FatArticle, Feed, FeedID, Tag, Thumbnail},
 };
-use ratatui::{crossterm::event::KeyEvent, text::Text};
+use ratatui::{
+    crossterm::event::{KeyEvent, MouseEvent},
+    text::Text,
+};
 
 use crate::prelude::*;
 
@@ -122,6 +125,19 @@ pub enum Event {
 
     // raw key event
     Key(KeyEvent),
+
+    // raw mouse event
+    Mouse(MouseEvent),
+
+    // mouse click on article list at row offset from top of inner area
+    MouseArticleClick(u16),
+
+    // mouse click on feed list at screen position (col, row)
+    MouseFeedClick(u16, u16),
+
+    // mouse scroll viewport without moving selection (panel, lines)
+    MouseScrollUp(Panel),
+    MouseScrollDown(Panel),
 
     // terminal resized
     Resized(u16, u16),

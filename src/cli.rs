@@ -43,6 +43,10 @@ pub struct CliArgs {
 
     #[arg(long)]
     quiet: bool,
+
+    /// Launch in chyron (scrolling ticker) mode
+    #[arg(long)]
+    chyron: bool,
 }
 
 #[derive(Args, Debug, Getters)]

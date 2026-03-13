@@ -718,6 +718,56 @@ pub enum Command {
         detailed_message = "refreshes contents of all panels according to selections (all)"
     )]
     Refresh,
+
+    // Chyron mode
+    #[strum(
+        serialize = "chyrontoggle",
+        message = "chyrontoggle",
+        detailed_message = "toggle between reader and chyron mode"
+    )]
+    ChyronToggle,
+
+    #[strum(
+        serialize = "chyronpause",
+        message = "chyronpause",
+        detailed_message = "toggle pause/play in chyron mode"
+    )]
+    ChyronPause,
+
+    #[strum(
+        serialize = "chyronspeedup",
+        message = "chyronspeedup",
+        detailed_message = "increase chyron scroll speed"
+    )]
+    ChyronSpeedUp,
+
+    #[strum(
+        serialize = "chyronspeeddown",
+        message = "chyronspeeddown",
+        detailed_message = "decrease chyron scroll speed"
+    )]
+    ChyronSpeedDown,
+
+    #[strum(
+        serialize = "chyronopencurrent",
+        message = "chyronopencurrent",
+        detailed_message = "open highlighted headline in browser (chyron paused)"
+    )]
+    ChyronOpenCurrent,
+
+    #[strum(
+        serialize = "chyronprevheadline",
+        message = "chyronprevheadline",
+        detailed_message = "step to previous headline (chyron paused)"
+    )]
+    ChyronPrevHeadline,
+
+    #[strum(
+        serialize = "chyronnextheadline",
+        message = "chyronnextheadline",
+        detailed_message = "step to next headline (chyron paused)"
+    )]
+    ChyronNextHeadline,
 }
 
 impl Command {
@@ -859,6 +909,13 @@ impl Display for Command {
             }
             CommandConfirm(command) => write!(f, "{}?", command),
             In(panel, command) => write!(f, "{command} in {panel}"),
+            ChyronToggle => write!(f, "toggle chyron mode"),
+            ChyronPause => write!(f, "toggle chyron pause"),
+            ChyronSpeedUp => write!(f, "increase chyron speed"),
+            ChyronSpeedDown => write!(f, "decrease chyron speed"),
+            ChyronOpenCurrent => write!(f, "open current headline"),
+            ChyronPrevHeadline => write!(f, "previous headline"),
+            ChyronNextHeadline => write!(f, "next headline"),
         }
     }
 }

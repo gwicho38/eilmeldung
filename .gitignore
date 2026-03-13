@@ -1,5 +1,6 @@
 /target
 /.direnv/
+/.worktrees/
 
 
 # Added by cargo
