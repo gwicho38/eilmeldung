@@ -178,9 +178,7 @@ impl PanelAreas {
 
 pub struct App {
     state: AppState,
-    #[allow(dead_code)] // used in upcoming chyron rendering tasks
     mode: AppMode,
-    #[allow(dead_code)] // used in upcoming chyron rendering tasks
     chyron_state: chyron::ChyronState,
 
     config: Arc<Config>,

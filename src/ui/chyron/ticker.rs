@@ -122,7 +122,6 @@ impl TickerState {
 ///
 /// Format: `[CATEGORY] Title ███ [CATEGORY] Title ███ ...`
 /// The separator is 3 block characters.
-#[allow(dead_code)] // Called in Task 11
 pub fn render_ticker(
     area: Rect,
     buf: &mut Buffer,

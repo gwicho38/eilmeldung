@@ -8,7 +8,6 @@ use super::ticker_queue::CategoryInfo;
 ///
 /// Column count adapts to terminal width: 4 columns at 120+, 3 at 80+, 2 at narrow.
 /// Categories are pre-sorted by unread count descending.
-#[allow(dead_code)] // called in upcoming chyron rendering tasks
 pub fn render_chyron_category_grid(
     area: Rect,
     buf: &mut Buffer,

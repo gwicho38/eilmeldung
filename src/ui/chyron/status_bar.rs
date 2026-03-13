@@ -7,7 +7,6 @@ use crate::prelude::*;
 /// Render the single-line chyron status bar.
 ///
 /// Content: `░ EILMELDUNG CHYRON ░  {feed_count} feeds │ {unread_count} unread │ {●/○} │ synced {timestamp}`
-#[allow(dead_code)] // called from render_chyron in Task 11
 pub fn render_chyron_status_bar(
     area: Rect,
     buf: &mut Buffer,

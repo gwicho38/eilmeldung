@@ -5,6 +5,11 @@ use throbber_widgets_tui::Throbber;
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
+        if self.mode == AppMode::Chyron {
+            self.render_chyron(area, buf);
+            return;
+        }
+
         if self.state == AppState::ArticleContentDistractionFree
             && !self.command_input.is_active()
             && !self.command_confirm.is_active()
