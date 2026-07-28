@@ -1,6 +1,6 @@
 ## Article Queries
 
-**eilmeldung** features a flexible query language that can be used across multiple contexts throughout the application. Queries are useful to display specific articles or execute bulk-operations. 
+**dispatch** features a flexible query language that can be used across multiple contexts throughout the application. Queries are useful to display specific articles or execute bulk-operations. 
 
 ---
 

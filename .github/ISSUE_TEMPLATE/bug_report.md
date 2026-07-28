@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 Reproduce behavior with `--log-file` and `--log-level TRACE` and insert the relevant content of the log file here.
 
 **Context**
- - Version: (`eilmeldung --version`)
+ - Version: (`dispatch --version`)
  - OS: macOS or Linux
  - Package: binaries from GitHub, homebrew, nix, etc.
  - Terminal Emulator: ghostty, foot, kitty, Konsole, etc.

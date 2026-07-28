@@ -1,6 +1,6 @@
 # Installation
 
-Follow any of the installation methods below, then run *eilmeldung*. It will guide you through the setup process.
+Follow any of the installation methods below, then run *dispatch*. It will guide you through the setup process.
 
 ---
 
@@ -22,11 +22,11 @@ You need a [Nerd Font](https://github.com/ryanoasis/nerd-fonts) compatible font/
 
 ## Via Homebrew
 
-To install via [homebrew](https://brew.sh), tap this repository and install *eilmeldung*:
+To install via [homebrew](https://brew.sh), tap this repository and install *dispatch*:
 
 ```bash
-brew tap christo-auer/eilmeldung https://github.com/christo-auer/eilmeldung
-brew install eilmeldung
+brew tap christo-auer/dispatch https://github.com/christo-auer/dispatch
+brew install dispatch
 ```
 
 ---
@@ -35,9 +35,9 @@ brew install eilmeldung
 
 There are three AUR packages
 
-- `eilmeldung` compiles the latest release 
-- `eilmeldung-git` the `HEAD` of `main`. 
-- `eilmeldung-bin` installs the statically linked binaries
+- `dispatch` compiles the latest release 
+- `dispatch-git` the `HEAD` of `main`. 
+- `dispatch-bin` installs the statically linked binaries
 
 Use `paru` or `yay` to install.
 
@@ -45,7 +45,7 @@ Use `paru` or `yay` to install.
 
 ## Via Cargo
 
-In order to compile `eilmeldung` from source, you need `cargo` with a `rust` compiler with at least edition 2024 (e.g., use `rustup` and `rustup default stable`) and some build deps:
+In order to compile `dispatch` from source, you need `cargo` with a `rust` compiler with at least edition 2024 (e.g., use `rustup` and `rustup default stable`) and some build deps:
 
 | Distribution | Dependencies (Build and Runtime)                                                           |
 | ---          | ---                                                                                        |
@@ -54,36 +54,36 @@ In order to compile `eilmeldung` from source, you need `cargo` with a `rust` com
 | Arch         | `# pacman -S cargo base-devel clang perl libxml2 openssl libsixel sqlite3`                             |
 
 ```bash
-cargo install eilmeldung
+cargo install dispatch
 ```
 To compile the latest unreleased version (`HEAD` in `main`):
 ```bash
-cargo install --locked --git https://github.com/christo-auer/eilmeldung
+cargo install --locked --git https://github.com/christo-auer/dispatch
 ```
 
 ---
 
 ## Nix Flake and Home Manager
 
-Add *eilmeldung* to your inputs, apply `eilmeldung.overlays.default` overlay to `pkgs`. If you want Home Manager integration, add Home Manager module `eilmeldung.homeManager.default`. Here is an example:
+Add *dispatch* to your inputs, apply `dispatch.overlays.default` overlay to `pkgs`. If you want Home Manager integration, add Home Manager module `dispatch.homeManager.default`. Here is an example:
 
 ```nix
 {
   inputs = {
     // ...
-    eilmeldung.url = "github:christo-auer/eilmeldung";
+    dispatch.url = "github:christo-auer/dispatch";
   };
 
-  outputs = { nixpkgs, home-manager, eilmeldung, ... }: {
+  outputs = { nixpkgs, home-manager, dispatch, ... }: {
     homeConfigurations."..." = home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgs {
         system = "x86_64-linux";
-        overlays = [ eilmeldung.overlays.default ];
+        overlays = [ dispatch.overlays.default ];
       };
       
       modules = [
         // ...
-        eilmeldung.homeManager.default
+        dispatch.homeManager.default
       ];
     };
   };
@@ -93,7 +93,7 @@ Add *eilmeldung* to your inputs, apply `eilmeldung.overlays.default` overlay to 
 Home Manager configuration works by defining the settings from the configuration file:
 
 ```nix
-programs.eilmeldung = {
+programs.dispatch = {
   enable = true;
 
   settings = {
@@ -132,4 +132,4 @@ programs.eilmeldung = {
 
 ## Next Steps
 
-After installation, see the [Getting Started Guide](getting-started.md) to set up and configure eilmeldung.
+After installation, see the [Getting Started Guide](getting-started.md) to set up and configure dispatch.

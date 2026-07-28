@@ -1,17 +1,17 @@
 # Configuration 
 
- **Important**: You don't need a `config.toml` file. If you don't provide your own `config.toml` *eilmeldung* uses sensible defaults. If you are interested in what these defaults are, you can consult `examples/default-config.toml`.
+ **Important**: You don't need a `config.toml` file. If you don't provide your own `config.toml` *dispatch* uses sensible defaults. If you are interested in what these defaults are, you can consult `examples/default-config.toml`.
 
  **Note**: You should not use `examples/default-config.toml` as your configuration as this will cause breaking changes with future releases. Start with an empty `config.toml` and add all the settings you want to have *different* from the default configuration.
 
 **Note:** Icons and special characters require a terminal and font that support [Nerd Fonts](https://www.nerdfonts.com/).
 
-**eilmeldung** uses a TOML configuration file to customize behavior, appearance, and key bindings. The configuration file is optional, eilmeldung works out-of-the-box with sensible defaults.
+**dispatch** uses a TOML configuration file to customize behavior, appearance, and key bindings. The configuration file is optional, dispatch works out-of-the-box with sensible defaults.
 ## Table of Contents
 
 
 - [Location of Configuration Files](#location-of-configuration-files)
-  - [eilmeldung Configuration File](#eilmeldung-configuration-file)
+  - [dispatch Configuration File](#dispatch-configuration-file)
   - [news-flash State Files](#news-flash-state-files)
 - [Basic Configuration Options](#basic-configuration-options)
 - [Default Sort Order](#default-sort-order)
@@ -38,14 +38,14 @@
 
 ## Location of Configuration Files
 
-### eilmeldung Configuration File
-**eilmeldung** tries the following locations for `config.toml` in order:
+### dispatch Configuration File
+**dispatch** tries the following locations for `config.toml` in order:
 
-- `$XDG_CONFIG_HOME/eilmeldung/config.toml` on Linux **and** macos
-- if this doesn't exist: `$HOME/.config/eilmeldung/config.toml` 
+- `$XDG_CONFIG_HOME/dispatch/config.toml` on Linux **and** macos
+- if this doesn't exist: `$HOME/.config/dispatch/config.toml` 
 - if this doesn't exist
   - Linux: default config is used
-  - macos: `~/Library/Application Support/org.christo-auer.eilmeldung/config.toml`
+  - macos: `~/Library/Application Support/org.christo-auer.dispatch/config.toml`
 - if none of the above exists, the default configuration is used
 
 You can overwrite this behavior by using the `--config-dir <PATH>` [Command Line Option](cli_args.md) which takes precedence over all.
@@ -54,13 +54,13 @@ You can overwrite this behavior by using the `--config-dir <PATH>` [Command Line
 
 news-flash configuration files (`newsflash.json` and authentication files) are stored in:
 
-- Linux: `$XDG_CONFIG_HOME/eilmeldung` (which is usually `~/.config/eilmeldung`)
-- macos: `~/Library/Application Support/org.christo-auer.eilmeldung`
+- Linux: `$XDG_CONFIG_HOME/dispatch` (which is usually `~/.config/dispatch`)
+- macos: `~/Library/Application Support/org.christo-auer.dispatch`
 
 news-flash local database and caches are stored in:
 
-- Linux: `$XDG_DATA_HOME/eilmeldung` which is usually (`~/.local/state/eilmeldung`)
-- macos: `~/Library/Application Support/org.christo-auer.eilmeldung`
+- Linux: `$XDG_DATA_HOME/dispatch` which is usually (`~/.local/state/dispatch`)
+- macos: `~/Library/Application Support/org.christo-auer.dispatch`
 
 You can change this behaviour by using the [Command Line Options](cli_args.md) `--news-flash-config-dir` and `--news-flash-state-dir`
 
@@ -146,7 +146,7 @@ You can change this behaviour by using the [Command Line Options](cli_args.md) `
 
 ## Startup Commands
 
-`startup_commands` is a list of [Commands](commands.md) which are executed when `eilmeldung` starts. For instance, on startup the feeds should be synced automatically, the article list should be selected showing all articles, set `startup_commands` to:
+`startup_commands` is a list of [Commands](commands.md) which are executed when `dispatch` starts. For instance, on startup the feeds should be synced automatically, the article list should be selected showing all articles, set `startup_commands` to:
 
 ```toml
 startup_commands = ["sync", "focus articles", "show articles all"]
@@ -456,7 +456,7 @@ share_targets = [
   "reddit",
   'hackernews https://news.ycombinator.com/submitlink?u={url}&t={title}',
   'pocket https://getpocket.com/save?url={url}&title={title}',
-  'sendmail ./sendmail.sh me@eilmeldung.org \"{title}\" \"{url}\"', # note the double quotes around the two variables
+  'sendmail ./sendmail.sh me@dispatch.org \"{title}\" \"{url}\"', # note the double quotes around the two variables
   'chromium chromium \"{url}\"',
   'org-mode xdg-open \"org-protocol://capture?template=L&url=\"{url}\"&title=\"{title}\"\"' # share on emacs/org-mode (by @luogni)
 ]
@@ -538,7 +538,7 @@ https://github.com/user-attachments/assets/e9277d94-a6da-49de-8dd0-8c6a75e09430
 
 ## Automatic Login
 
-Upon first starting `eilmeldung`, the user is asked to enter login information after which `eilmeldung` logs into the provider and syncs the content. This interactive login setup can be *automated* by filling the section `[login_setup]`. The settings are:
+Upon first starting `dispatch`, the user is asked to enter login information after which `dispatch` logs into the provider and syncs the content. This interactive login setup can be *automated* by filling the section `[login_setup]`. The settings are:
 
 
 | Option                | Type   | `login_type`                               | Description                                                                   |
@@ -563,16 +563,16 @@ Upon first starting `eilmeldung`, the user is asked to enter login information a
 Configuration options with type *secret* are strings which
 
 - either contain the secret itself (e.g, `password = "abcd1234" `); storing password in *clear text* is **NOT RECOMMENDED**
-- or contain a command with prefix `cmd:` which outputs the secret to stdout (e.g., `password = "cmd:pass my-passwords/eilmeldung"`); **THIS IS THE WAY**
+- or contain a command with prefix `cmd:` which outputs the secret to stdout (e.g., `password = "cmd:pass my-passwords/dispatch"`); **THIS IS THE WAY**
 
 ### Finding the Right Settings
 
-`eilmeldung` outputs all needed values via the command line switch `--print-login-data`. If you are already logged in, it simply outputs the login data. If you are not logged in, you will be led through the interactive login process and the login data is output afterwards:
+`dispatch` outputs all needed values via the command line switch `--print-login-data`. If you are already logged in, it simply outputs the login data. If you are not logged in, you will be led through the interactive login process and the login data is output afterwards:
 
 ```bash
-eilmeldung --print-login-data
+dispatch --print-login-data
 
-Welcome to +++ eilmeldung +++
+Welcome to +++ dispatch +++
 ...
 ...
 > Are you satisfied with these settings? Select `n` to change them. Yes
@@ -595,7 +595,7 @@ login_type = "direct_password"
 provider = "freshrss"
 user = "username"
 url = "http://x.y.z.w/api/greader.php/"
-password = "cmd:pass my-passwords/eilmeldung"
+password = "cmd:pass my-passwords/dispatch"
 ```
 
 ### CLI Options

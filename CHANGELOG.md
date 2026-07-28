@@ -4,8 +4,8 @@
 
 # 1.1.0 - 2026-03-11
 
-- 📢 Stay up-to-date! Subscribe to the [eilmeldung release atom feed](https://github.com/christo-auer/eilmeldung/releases.atom)! Press `c e` in eilmeldung to automatically add the feed!
-- 🤖 Want to use your **AI/LLM chatbot with eilmeldung** to select and summarize articles? Or do you want eilmeldung to stay clear all this AI fuzz? Take part in the [survey (demo inside)](https://github.com/christo-auer/eilmeldung/issues/197) and let me know what you think!
+- 📢 Stay up-to-date! Subscribe to the [dispatch release atom feed](https://github.com/christo-auer/dispatch/releases.atom)! Press `c e` in dispatch to automatically add the feed!
+- 🤖 Want to use your **AI/LLM chatbot with dispatch** to select and summarize articles? Or do you want dispatch to stay clear all this AI fuzz? Take part in the [survey (demo inside)](https://github.com/christo-auer/dispatch/issues/197) and let me know what you think!
 - level up your workflow with 🚩s!
   - select (*flag*) multiple articles to execute bulk-operations
   - press `f` to flag articles and then press `r` to mark them as *read*
@@ -19,7 +19,7 @@
 - `nextunread` now also works in the feed list 
   - as you already now, pressing `r` in the *article list* automatically selects the next unread article
   - now this also works in the *feed list* (big thanks to @janbuchar for his PR!)
-  - and when you press `r` in the article list and no unread article is left, *eilmeldung* automatically selects the next unread item in the feed list! How cool is that?!
+  - and when you press `r` in the article list and no unread article is left, *dispatch* automatically selects the next unread item in the feed list! How cool is that?!
 - improvement: often used async operations are now non-blocking
 - bugfixes
   - login setup now works as expected if a different provider is selected
@@ -30,29 +30,29 @@
 
 - 🎉 **Version 1.0.0** 🎉 
   - for the last two months, I've incoporated all the helpful feedback from you, the users! Thanks to all of you!
-  - as I feel *eilmeldung* is pretty much feature-complete, I've decided to go v1.0.0!
+  - as I feel *dispatch* is pretty much feature-complete, I've decided to go v1.0.0!
   - that said, if you have suggestions for improvements, feel free to crate an issue!
-  - also, development of *eilmeldung* does not halt but will propably proceed in a slower pace with less (breaking) features
+  - also, development of *dispatch* does not halt but will propably proceed in a slower pace with less (breaking) features
 - you can now mark all articles *above* and *below* the selected articles as read (or unread, marked or unmarked)
   - the commands `read`, `unread`, `mark` and `unmark` accept `above` or `below` as scopes
   - there are default key mappings: `0 r` and `$ r` for marking all articles above/below (and including) the selected article as read. The same works for `u` (unread), `m` (mark) and `v` (unmark)
-- configuration directory resolution is now a bit more flexible, in particular, using `~/.config/eilmeldung/` in macos is now possible. **eilmeldung** tries the following directories on startup:
-  - `$XDG_CONFIG_HOME/eilmeldung/config.toml` on Linux **and** macos
-  - if this doesn't exist: `$HOME/.config/eilmeldung/config.toml` on Linux **and** macos
+- configuration directory resolution is now a bit more flexible, in particular, using `~/.config/dispatch/` in macos is now possible. **dispatch** tries the following directories on startup:
+  - `$XDG_CONFIG_HOME/dispatch/config.toml` on Linux **and** macos
+  - if this doesn't exist: `$HOME/.config/dispatch/config.toml` on Linux **and** macos
   - if this doesn't exist
     - Linux: default config is used
-    - macos: `~/Library/Application Support/org.christo-auer.eilmeldung/config.toml`
+    - macos: `~/Library/Application Support/org.christo-auer.dispatch/config.toml`
   - if none of the above exists, the default configuration is used
-  - by using CLI arguments (see `docs/cli_args.md`) you can adjust the location of eilmeldung's `config.toml`, news-flash configuration and state directories
+  - by using CLI arguments (see `docs/cli_args.md`) you can adjust the location of dispatch's `config.toml`, news-flash configuration and state directories
 - optimiziation: batch commands (e.g., `startup_commands`) are now only blocking if they contain more than one entry
 
 # 0.9.6 - 2026-02-25
 
 - *first* things *first*
-  - `eilmeldung` is now on [terminaltrove](https://terminaltrove.com/eilmeldung/)!
-  - and also on [crates.io](https://crates.io/crates/eilmeldung) --- `cargo install eilmeldung` everybody!
+  - `dispatch` is now on [terminaltrove](https://terminaltrove.com/dispatch/)!
+  - and also on [crates.io](https://crates.io/crates/dispatch) --- `cargo install dispatch` everybody!
 - and here are some new features:
-  - want more real estate? That is in eilmeldung at least? Set `show_top_bar = false` in `config.toml` to hide the top bar and gain one whole line of juicy news contents. The status icon is displayed at the bottom right after this.
+  - want more real estate? That is in dispatch at least? Set `show_top_bar = false` in `config.toml` to hide the top bar and gain one whole line of juicy news contents. The status icon is displayed at the bottom right after this.
   - new command `filtersticky` for filter queries which are applied everywhere
     - `filter` is applied to the current article list and deactivated as soon as another entry in the feed list is selected
     - `filtersticky` (same syntax as filter) defines a filter which is always applied (use `filterclear` or `+ r` to reset) 
@@ -97,7 +97,7 @@
 - new option `zen_mode_show_header`
   - show header (title, feed, date, etc.) in zen/distraction-free 
   - default is `false`, add `zen_mode_show_header=true` to your `config.toml` to activate
-- **IMPORTANT**: eilmeldung now fails on `config.toml` files with *unknown settings* instead of silently ignoring them. This is to improve user experience and avoid unexpected behavior.
+- **IMPORTANT**: dispatch now fails on `config.toml` files with *unknown settings* instead of silently ignoring them. This is to improve user experience and avoid unexpected behavior.
 - bugfix: select first article when a tree item is selected
 
 # 0.9.2 - 2026-02-10
@@ -140,11 +140,11 @@
 
 - new CLI magic for the people
   - `--sync` syncs all feeds and outputs (customizable) sync statistics (for you `cron`/`systemd` tweakers)
-  - `--import-opml`/`--export-opml` for importing/exporting OPML directly from the command line for automatic setup; combine with login settings and you can setup `eilmeldung` without manual input!
+  - `--import-opml`/`--export-opml` for importing/exporting OPML directly from the command line for automatic setup; combine with login settings and you can setup `dispatch` without manual input!
   - `--logout` to logout
   - for more information checkout `docs/cli_args.md`
-  - **Warning**: You should not execute these commands while eilmeldung is running in another process to avoid data inconsistency!
-- **inoreader** (OAuth2) provider is now supported (**note**: You need a Pro account to create an application token to grant `eilmeldung` access to **inoreader**)
+  - **Warning**: You should not execute these commands while dispatch is running in another process to avoid data inconsistency!
+- **inoreader** (OAuth2) provider is now supported (**note**: You need a Pro account to create an application token to grant `dispatch` access to **inoreader**)
 - bugfixes
   - deleting categories works now (thanks to @JanGernert for updating `news_flash` to 3.0.0)
   - fixed false negatives in reachability checks (thanks to @janbuchar)
@@ -171,7 +171,7 @@
   - `collapse`: collapses the current item in the tree
   - `collapseall`: collapses all items in the tree
 - bugfix: custom colors all mapped to `none`
-- switched to system TLS implementation (thanks to @bgiarrizzo for the PR) which makes it possible to use eilmeldung behind SSL injection proxies
+- switched to system TLS implementation (thanks to @bgiarrizzo for the PR) which makes it possible to use dispatch behind SSL injection proxies
 
 # 0.7.9 - 2026-01-22
 
@@ -235,7 +235,7 @@
 
 # 0.7.2 - 2026-01-07
 
-- bugfix: eilmeldung wouldn't launch if no `config.toml` exists; now it launches with the default configuration
+- bugfix: dispatch wouldn't launch if no `config.toml` exists; now it launches with the default configuration
 
 
 # 0.7.1 - 2026-01-06
@@ -307,7 +307,7 @@
 
 # 0.4.10 - 2025-12-27
 
-- AUR packages `eilmeldung` and `eilmeldung-git` now available
+- AUR packages `dispatch` and `dispatch-git` now available
 
 # 0.4.9 - 2025-12-26
 

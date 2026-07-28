@@ -1,6 +1,6 @@
 # Frequently Asked Questions (FAQ)
 
-Common questions and answers about eilmeldung.
+Common questions and answers about dispatch.
 
 ---
 
@@ -19,9 +19,9 @@ Common questions and answers about eilmeldung.
 
 See [news_flash_gtk for all supported providers](https://gitlab.com/news-flash/news_flash_gtk).
 
-### What does "eilmeldung" mean?
+### What does "dispatch" mean?
 
-*eilmeldung* is German for *breaking news*.
+*dispatch* is German for *breaking news*.
 
 ### Do I need a Nerd Font?
 
@@ -38,12 +38,12 @@ Yes! You can define *custom share targets* which accept commands or URLs. For in
 ```toml
 share_targets = [
   'hackernews https://news.ycombinator.com/submitlink?u={url}&t={title}', # opens webbrowser
-  'sendmail ./sendmail.sh me@eilmeldung.org "{title}" "{url}"', # passes title and URL to shell script
+  'sendmail ./sendmail.sh me@dispatch.org "{title}" "{url}"', # passes title and URL to shell script
   # more share targets
 ]
 ```
 
-In `eilmeldung`, select an article and share it with `share hackernews` or `share sendmail` (use TAB for autocompletion). Of course, you can also define key bindings for this:
+In `dispatch`, select an article and share it with `share hackernews` or `share sendmail` (use TAB for autocompletion). Of course, you can also define key bindings for this:
 
 ```toml
 [input_config.mappings]
@@ -65,7 +65,7 @@ image_enclosure_command = "firefox {url}"
 
 See [Opening Enclosures](configuration.md#opening-enclosures) for more information.
 
-### Does eilmeldung support smart folders?
+### Does dispatch support smart folders?
 
 Yes, by using queries in the feed list. For example:
 
@@ -135,7 +135,7 @@ Yes, in your `config.toml` add `focus articles` to your `startup_commands` (`sta
 
 Use the command `expandcategories unread`. Call with `all` to expand all categories and `marked` to expand all categories with marked articles. Create a keybinding for quick action or add it `startup_commands`.
 
-### Can I sync/refresh without starting eilmeldung? 
+### Can I sync/refresh without starting dispatch? 
 
 Yes, use `--sync`. See [CLI Arguments](cli_args.md). This even outputs sync statistics for further shell shenanigans.
 
@@ -151,7 +151,7 @@ Yes! The commands `read`, `unread`, `mark` and `unmark` accept `above` or `below
 
 ### Can I select more articles and then execute an operation on them?
 
-Yes! In `eilmeldung` this is called `flag`ing: Press `f` to flag one or more articles and then any command is executed on all flagged articles (e.g. `r` for marking them as read). Of course, `m` (mark), `t` (tag), `o` (open in browser) all work as expected.
+Yes! In `dispatch` this is called `flag`ing: Press `f` to flag one or more articles and then any command is executed on all flagged articles (e.g. `r` for marking them as read). Of course, `m` (mark), `t` (tag), `o` (open in browser) all work as expected.
 To *unflag* press `d` (*delete* flag) and to *invert the flag state*  press `i`. The upper-case variants flag/unflag *all articles* in the article list. And you can even flag all articles *above*/*below* by prepending `0` or `$`.
 
 For experts: `flag`/`unflag`/`invertflag` are commands just like `read`, `tag`, etc. You can `flag` by a *query* e.g. `flag unread` flags all unread articles. And: `flagged` is a query key which matches flagged articles.
@@ -204,12 +204,12 @@ This allows you to:
 
 ```toml
 [login_setup]
-password = "cmd:pass my-passwords/eilmeldung"
+password = "cmd:pass my-passwords/dispatch"
 ```
 
 ### How do I find the right login settings?
 
-Run `eilmeldung --print-login-data` to see the configuration needed for your setup. This will guide you through the login process and output the configuration at the end.
+Run `dispatch --print-login-data` to see the configuration needed for your setup. This will guide you through the login process and output the configuration at the end.
 
 See [Finding the Right Settings](configuration.md#finding-the-right-settings) for details.
 
@@ -247,10 +247,10 @@ Make sure you're using a [Nerd Font](https://github.com/ryanoasis/nerd-fonts) co
 
 ### How do I enable debug logging?
 
-Run eilmeldung with debug logging to troubleshoot issues:
+Run dispatch with debug logging to troubleshoot issues:
 
 ```bash
-eilmeldung --log-level DEBUG --log-file ~/eilmeldung-debug.log
+dispatch --log-level DEBUG --log-file ~/dispatch-debug.log
 ```
 
 See [Command Line Arguments](cli_args.md) for more options.
@@ -262,4 +262,4 @@ See [Command Line Arguments](cli_args.md) for more options.
 - Check the full [Documentation](../README.md#documentation)
 - Review the [Commands](commands.md) reference
 - Read the [Configuration](configuration.md) guide
-- Report issues at [GitHub](https://github.com/christo-auer/eilmeldung/issues)
+- Report issues at [GitHub](https://github.com/christo-auer/dispatch/issues)

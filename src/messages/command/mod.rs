@@ -662,7 +662,7 @@ pub enum Command {
     #[strum(
         serialize = "quit",
         message = "quit",
-        detailed_message = "quit eilmeldung (all)"
+        detailed_message = "quit dispatch (all)"
     )]
     ApplicationQuit,
 

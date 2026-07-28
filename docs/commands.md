@@ -1,6 +1,6 @@
 ## Commands
 
-**eilmeldung** provides a comprehensive command system that can be invoked in two ways:
+**dispatch** provides a comprehensive command system that can be invoked in two ways:
 
 - **Command line**: Press `:` to open the command line, then type your command and press Enter
 - **Key bindings**: Commands are bound to key sequences (see the Keybindings section for defaults and customization)
@@ -65,7 +65,7 @@ Here are some common command examples to get you started:
 
 | Command   | Syntax                 | Context   | Description                                                                                        |
 | --------- | --------               | --------- | -------------                                                                                      |
-| `quit`    | `quit`                 | All       | Quit eilmeldung                                                                                    |
+| `quit`    | `quit`                 | All       | Quit dispatch                                                                                    |
 | `cmd`     | `cmd [<content>]`      | All       | Open command line with optional pre-filled content                                                 |
 | `redraw`  | `redraw`               | All       | Redraw the screen                                                                                  |
 | `refresh` | `refresh`              | All       | Refreshes the contents of all panels according to the current selections                           |

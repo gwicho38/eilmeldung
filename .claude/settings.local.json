@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git mv:*)",
+      "Bash(xxd)",
+      "Bash(cargo check:*)",
+      "Bash(gh repo:*)",
+      "Bash(git remote:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "docx-mcp"
+  ]
+}

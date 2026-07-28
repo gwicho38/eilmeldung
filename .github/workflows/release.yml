@@ -137,20 +137,20 @@ jobs:
 
       - name: Create package directory
         run: |
-          mkdir -p package/eilmeldung
-          cp target/${{ matrix.target }}/release/eilmeldung package/eilmeldung/
-          cp -r examples package/eilmeldung/
+          mkdir -p package/dispatch
+          cp target/${{ matrix.target }}/release/dispatch package/dispatch/
+          cp -r examples package/dispatch/
 
       - name: Create tarball
         run: |
           cd package
-          tar -czf eilmeldung-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}.tar.gz eilmeldung/
+          tar -czf dispatch-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}.tar.gz dispatch/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eilmeldung-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}
-          path: package/eilmeldung-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}.tar.gz
+          name: dispatch-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}
+          path: package/dispatch-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}.tar.gz
 
 
   build_macos:
@@ -227,20 +227,20 @@ jobs:
 
       - name: Create package directory
         run: |
-          mkdir -p package/eilmeldung
-          cp target/${{ matrix.target }}/release/eilmeldung package/eilmeldung/
-          cp -r examples package/eilmeldung/
+          mkdir -p package/dispatch
+          cp target/${{ matrix.target }}/release/dispatch package/dispatch/
+          cp -r examples package/dispatch/
 
       - name: Create tarball
         run: |
           cd package
-          tar -czf eilmeldung-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}.tar.gz eilmeldung/
+          tar -czf dispatch-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}.tar.gz dispatch/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eilmeldung-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}
-          path: package/eilmeldung-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}.tar.gz
+          name: dispatch-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}
+          path: package/dispatch-${{ matrix.target }}-${{ steps.tag.outputs.TAG_NAME }}.tar.gz
 
   release-crates-io:
     name: Release on crates.io
@@ -308,7 +308,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            ./artifacts/**/eilmeldung-*.tar.gz
+            ./artifacts/**/dispatch-*.tar.gz
 
   homebrew-bump:
         name: Update Homebrew formula sha256
@@ -334,7 +334,7 @@ jobs:
             ./HomebrewFormula/update-sha.sh ${{ steps.tag.outputs.TAG_NAME }}
             git config user.email "${{ vars.GIT_USER_EMAIL }}"
             git config user.name "${{ vars.GIT_USER_NAME }}"
-            git add ./HomebrewFormula/eilmeldung.rb
+            git add ./HomebrewFormula/dispatch.rb
             git commit -m "chore: update SHA256 in homebrew formula"
             git push origin main
 
@@ -347,7 +347,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        package: [eilmeldung, eilmeldung-bin]
+        package: [dispatch, dispatch-bin]
     steps:
       - name: Extract tag name
         id: tag

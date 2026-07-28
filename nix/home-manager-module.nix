@@ -3,20 +3,20 @@
 with lib;
 
 let
-  cfg = config.programs.eilmeldung;
+  cfg = config.programs.dispatch;
   settingsFormat = pkgs.formats.toml { };
   configFile = settingsFormat.generate "config.toml" cfg.settings;
 in {
   meta.maintainers = [ "christo-auer" ];
 
-  options.programs.eilmeldung = {
-    enable = mkEnableOption "eilmeldung, a feature-rich TUI RSS reader";
+  options.programs.dispatch = {
+    enable = mkEnableOption "dispatch, a feature-rich TUI RSS reader";
 
     package = mkOption {
       type = types.package;
-      default = pkgs.eilmeldung;
-      defaultText = literalExpression "pkgs.eilmeldung";
-      description = "The eilmeldung package to use.";
+      default = pkgs.dispatch;
+      defaultText = literalExpression "pkgs.dispatch";
+      description = "The dispatch package to use.";
     };
 
     settings = mkOption {
@@ -48,9 +48,9 @@ in {
         }
       '';
       description = ''
-        Configuration written to {file}`$XDG_CONFIG_HOME/eilmeldung/config.toml`.
+        Configuration written to {file}`$XDG_CONFIG_HOME/dispatch/config.toml`.
         
-        See <https://github.com/christo-auer/eilmeldung#configuration-options>
+        See <https://github.com/christo-auer/dispatch#configuration-options>
         for the full list of options.
       '';
     };
@@ -59,7 +59,7 @@ in {
   config = mkIf cfg.enable {
     home.packages = [ cfg.package ];
 
-    xdg.configFile."eilmeldung/config.toml" = mkIf (cfg.settings != { }) {
+    xdg.configFile."dispatch/config.toml" = mkIf (cfg.settings != { }) {
       source = configFile;
     };
   };

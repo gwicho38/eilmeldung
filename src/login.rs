@@ -258,8 +258,8 @@ For this provider you need an **API Secret**
 Create a new *Application* under your account *Settings* with the following configuration options (if applicable)
 
 |-|-|
-|**Name** | *eilmeldung* or any name you want |
-|**URL** | empty or *https://github.com/christo-auer/eilmeldung* |
+|**Name** | *dispatch* or any name you want |
+|**URL** | empty or *https://github.com/gwicho38/dispatch* |
 |**Platform** | Linux/MacOS |
 |**Redirect URI** | You **must** set this to `http://localhost` |
 |**Scope** | read and write |
@@ -296,10 +296,10 @@ Create a new *Application* under your account *Settings* with the following conf
         match url.as_ref() {
             Some(url) => {
                 self.skin
-                    .print_text("\nNext you must authorize access by eilmeldung by visiting the following URL.\n");
+                    .print_text("\nNext you must authorize access by dispatch by visiting the following URL.\n");
                 self.skin.print_text(&format!("\n*{url}*\n"));
                 self.skin
-                    .print_text("\n**Important**: After authorizing eilmeldung, you will be forwarded to a **callback URL** and your browser will show an **error** that it can't connect. \n\nThis is **expected**! \n\n**Copy** the URL from the address bar into your **clipboard** and return here.\n\n");
+                    .print_text("\n**Important**: After authorizing dispatch, you will be forwarded to a **callback URL** and your browser will show an **error** that it can't connect. \n\nThis is **expected**! \n\n**Copy** the URL from the address bar into your **clipboard** and return here.\n\n");
                 self.inquire_open_url(url)?;
             }
             None => {
@@ -541,7 +541,7 @@ Create a new *Application* under your account *Settings* with the following conf
         trace!("preset login data {preset_login_data:?}");
 
         self.skin
-            .print_inline("\n**Welcome** to **+++ eilmeldung +++**\n\n");
+            .print_inline("\n**Welcome** to **+++ dispatch +++**\n\n");
         self.skin.print_text(
             "In the following you can setup the provider you want to use. You can always terminate the setup process by pressing **Ctrl-C** and restart later.\n\n",
         );

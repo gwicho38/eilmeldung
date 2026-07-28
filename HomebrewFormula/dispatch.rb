@@ -1,10 +1,10 @@
-class Eilmeldung < Formula
+class Dispatch < Formula
   desc "a feature-rich TUI RSS reader based on the newsflash library"
-  homepage "https://github.com/christo-auer/eilmeldung"
-  url "https://github.com/christo-auer/eilmeldung/archive/refs/tags/1.1.0.tar.gz"
+  homepage "https://github.com/christo-auer/dispatch"
+  url "https://github.com/christo-auer/dispatch/archive/refs/tags/1.1.0.tar.gz"
   sha256 "566aa7ec5477cd66ecf88a30f3faaeb84f873628dd11e5724f54a89677298b3c"
   license "GPL-3.0"
-  head "https://github.com/christo-auer/eilmeldung.git", branch: "main"
+  head "https://github.com/christo-auer/dispatch.git", branch: "main"
   version "1.1.0"
 
   depends_on "pkg-config" => :build
@@ -23,7 +23,7 @@ class Eilmeldung < Formula
   end
 
   test do
-    assert_match "eilmeldung #{version}", shell_output("#{bin}/eilmeldung --version").strip
+    assert_match "dispatch #{version}", shell_output("#{bin}/dispatch --version").strip
   end
 
 

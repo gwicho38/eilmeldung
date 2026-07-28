@@ -1,6 +1,6 @@
 # Command Line Arguments
 
-Run `eilmeldung --help` to display all available command line arguments
+Run `dispatch --help` to display all available command line arguments
 
 ---
 
@@ -29,7 +29,7 @@ Run `eilmeldung --help` to display all available command line arguments
 
 All these will exit after finishing.
 
-**Warning**: You should not execute these commands while eilmeldung is running in another process to avoid data inconsistency!
+**Warning**: You should not execute these commands while dispatch is running in another process to avoid data inconsistency!
 
 
 | Argument                    | Description                                                                                         |

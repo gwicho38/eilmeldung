@@ -377,7 +377,7 @@ mod test {
     }
 
     #[rstest]
-    #[case("cmd:pass private/eilmeldung", vec!["pass", "private/eilmeldung"])]
+    #[case("cmd:pass private/dispatch", vec!["pass", "private/dispatch"])]
     #[case("cmd:/home/user/pass.sh", vec!["/home/user/pass.sh"])]
     #[case(" cmd:   pass  ", vec!["pass"])]
     #[case("cmd:", vec![])]
@@ -391,7 +391,7 @@ mod test {
     }
 
     #[rstest]
-    #[case("cmd:pass \"private/eilmeldung")]
+    #[case("cmd:pass \"private/dispatch")]
     #[case("cmd:/home/user/pass.sh\'")]
     fn test_secret_parsing_command_fail(#[case] s: &str) {
         assert_matches!(Secret::from_str(s), Err(ConfigError::SecretParseError));

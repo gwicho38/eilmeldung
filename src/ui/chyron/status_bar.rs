@@ -6,7 +6,7 @@ use crate::prelude::*;
 
 /// Render the single-line chyron status bar.
 ///
-/// Content: `░ EILMELDUNG CHYRON ░  {feed_count} feeds │ {unread_count} unread │ {●/○} │ synced {timestamp}`
+/// Content: `░ DISPATCH CHYRON ░  {feed_count} feeds │ {unread_count} unread │ {●/○} │ synced {timestamp}`
 #[allow(clippy::too_many_arguments)]
 pub fn render_chyron_status_bar(
     area: Rect,
@@ -36,7 +36,7 @@ pub fn render_chyron_status_bar(
     };
 
     let status_text = format!(
-        " ░ EILMELDUNG CHYRON ░  {} feeds │ {} unread │ {} │{}",
+        " ░ DISPATCH CHYRON ░  {} feeds │ {} unread │ {} │{}",
         feed_count, unread_count, connection_indicator, sync_text
     );
 

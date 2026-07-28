@@ -22,7 +22,7 @@ pub struct CliArgs {
     #[arg(long)]
     log_level: Option<LevelFilter>,
 
-    /// Directory with eilmeldung config file (config.toml)
+    /// Directory with dispatch config file (config.toml)
     #[arg(short, long)]
     config_dir: Option<String>,
 

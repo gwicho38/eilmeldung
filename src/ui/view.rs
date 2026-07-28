@@ -118,8 +118,8 @@ impl Widget for &mut App {
         };
 
         if self.config.show_top_bar {
-            let eilmeldung_span =
-                Span::styled("  eilmeldung  ", self.config.theme.statusbar());
+            let dispatch_span =
+                Span::styled("  dispatch  ", self.config.theme.statusbar());
 
             // fill top line with status bar color
             Block::default()
@@ -139,7 +139,7 @@ impl Widget for &mut App {
             Span::styled("", self.config.theme.statusbar().not_reversed()).render(top_left, buf);
             Span::styled("", self.config.theme.statusbar().not_reversed()).render(top_right, buf);
 
-            let title = Line::from(vec![eilmeldung_span, status_span.clone()]);
+            let title = Line::from(vec![dispatch_span, status_span.clone()]);
 
             title.render(top_main, buf);
         }
