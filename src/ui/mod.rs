@@ -261,7 +261,7 @@ impl App {
             help_popup: HelpPopup::new(config_arc.clone(), message_sender.clone()),
             command_confirm: CommandConfirm::new(config_arc.clone(), message_sender.clone()),
             tooltip: Tooltip::new(
-                "Stay up-to-date! Press `c e` to add eilmeldung release feed!".into(),
+                "Stay up-to-date! Press `c e` to add dispatch release feed!".into(),
                 crate::ui::tooltip::TooltipFlavor::Info,
             ),
             async_operation_throbber: ThrobberState::default(),
@@ -358,8 +358,10 @@ impl App {
         rx: &mut UnboundedReceiver<Message>,
         mut terminal: DefaultTerminal,
     ) -> color_eyre::Result<()> {
+        let reader_tick_ms = 1000 / self.config.refresh_fps;
+        let chyron_tick_ms: u64 = 16; // ~60 FPS for smooth chyron scrolling
         let mut render_interval =
-            tokio::time::interval(Duration::from_millis(1000 / self.config.refresh_fps));
+            tokio::time::interval(Duration::from_millis(reader_tick_ms));
         debug!(
             "Command processing loop started with {}fps refresh rate",
             self.config.refresh_fps
@@ -378,7 +380,13 @@ impl App {
                     }
                 }
 
-                _ = render_interval.tick() => {
+                _ = async {
+                    if self.mode == AppMode::Chyron {
+                        tokio::time::sleep(Duration::from_millis(chyron_tick_ms)).await;
+                    } else {
+                        render_interval.tick().await;
+                    }
+                } => {
                     self.message_sender.send(Message::Event(Event::Tick))?;
                 }
 

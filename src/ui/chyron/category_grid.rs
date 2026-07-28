@@ -1,3 +1,5 @@
+#![allow(dead_code)] // module temporarily unused while category grid is commented out
+
 use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders, Paragraph};
 

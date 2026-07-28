@@ -34,16 +34,24 @@ impl ChyronState {
 impl App {
     /// Render the complete chyron layout: status bar, category grid, ticker, help bar.
     pub fn render_chyron(&mut self, area: Rect, buf: &mut Buffer) {
-        // 4-zone vertical layout
-        let [status_area, grid_area, ticker_area, help_area] = Layout::default()
+        // 3-zone vertical layout: ticker on top, status bar, help bar
+        let [ticker_area, status_area, _grid_area, help_area] = Layout::default()
             .direction(Direction::Vertical)
             .constraints([
-                Constraint::Length(1),  // status bar
-                Constraint::Min(0),    // category grid (fills remaining)
-                Constraint::Length(2), // ticker
+                Constraint::Length(1), // ticker (top)
+                Constraint::Length(1), // status bar
+                Constraint::Min(0),   // category grid (fills remaining, currently hidden)
                 Constraint::Length(1), // help bar
             ])
             .areas(area);
+
+        // Ticker (top position)
+        ticker::render_ticker(
+            ticker_area,
+            buf,
+            &self.chyron_state.ticker,
+            &self.config,
+        );
 
         // Status bar
         status_bar::render_chyron_status_bar(
@@ -58,21 +66,13 @@ impl App {
             &self.async_operation_throbber,
         );
 
-        // Category grid
-        category_grid::render_chyron_category_grid(
-            grid_area,
-            buf,
-            &self.chyron_state.categories,
-            &self.config,
-        );
-
-        // Ticker
-        ticker::render_ticker(
-            ticker_area,
-            buf,
-            &self.chyron_state.ticker,
-            &self.config,
-        );
+        // Category grid (commented out for now)
+        // category_grid::render_chyron_category_grid(
+        //     _grid_area,
+        //     buf,
+        //     &self.chyron_state.categories,
+        //     &self.config,
+        // );
 
         // Help bar
         let help_line = if self.chyron_state.ticker.paused {
