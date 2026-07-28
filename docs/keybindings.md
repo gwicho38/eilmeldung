@@ -1,6 +1,6 @@
 # Key Bindings Reference
 
-This document provides a comprehensive reference of all default key bindings in eilmeldung.
+This document provides a comprehensive reference of all default key bindings in dispatch.
 
 **Note:** You can redefine all key bindings according to your preferences. You can also add completely new key bindings via the [configuration file](configuration.md).
 

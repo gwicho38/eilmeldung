@@ -15,3 +15,29 @@
 # already existing elements were commented out
 
 #/target
+
+# ============================================
+# Secrets & Environment (managed by LSH)
+# ============================================
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.p8
+*.pfx
+*.crt
+*.cer
+*-firebase-adminsdk-*.json
+service-account-key.json
+firebase-service-account*.json
+
+# IDE and OS
+.DS_Store
+.vscode/settings.json
+.idea/
+

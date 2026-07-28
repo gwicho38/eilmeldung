@@ -2,19 +2,19 @@
 
 **Date:** 2026-03-13
 **Status:** Approved
-**Scope:** Add a Bloomberg-style scrolling news chyron mode to eilmeldung
+**Scope:** Add a Bloomberg-style scrolling news chyron mode to dispatch
 
 ---
 
 ## Overview
 
-A new ambient "chyron" mode that transforms eilmeldung from an interactive RSS reader into a passive, scrolling news ticker with a dashboard summary panel. Designed for "leave it running in a tmux pane" awareness across 145+ categorized RSS feeds spanning finance, security, politics, tech, and more.
+A new ambient "chyron" mode that transforms dispatch from an interactive RSS reader into a passive, scrolling news ticker with a dashboard summary panel. Designed for "leave it running in a tmux pane" awareness across 145+ categorized RSS feeds spanning finance, security, politics, tech, and more.
 
 ## Layout
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  ░ EILMELDUNG CHYRON  ░  145 feeds │ 312 unread │ ● │  ← status bar (1 line)
+│  ░ DISPATCH CHYRON  ░  145 feeds │ 312 unread │ ● │  ← status bar (1 line)
 ├─────────────────────────────────────────────────────┤
 │ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌─────────┐ │
 │ │ FINANCE  │ │ INTL NEWS│ │ INTEL    │ │ TECH    │ │  ← category grid
@@ -62,7 +62,7 @@ pub enum AppMode {
 ### CLI Flag
 
 ```bash
-eilmeldung --chyron
+dispatch --chyron
 ```
 
 The `--chyron` flag is a **top-level field on `CliArgs`**, not part of the `CliAction` arg group. `CliAction` members (`--sync`, `--stats`, `--export-opml`, etc.) are mutually exclusive one-shot actions that exit after running. `--chyron` instead launches the full TUI event loop with `AppMode::Chyron` as the initial mode.
@@ -95,7 +95,7 @@ Press `C` to switch between reader mode and chyron mode. Both modes share the sa
 
 Single-line status display.
 
-**Content:** `░ EILMELDUNG CHYRON ░  {feed_count} feeds │ {unread_count} unread │ {●/○} │ synced {timestamp}`
+**Content:** `░ DISPATCH CHYRON ░  {feed_count} feeds │ {unread_count} unread │ {●/○} │ synced {timestamp}`
 
 **Updates on:**
 - `Event::AsyncSyncFinished` — refreshes unread count and sync timestamp

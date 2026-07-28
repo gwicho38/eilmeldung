@@ -76,7 +76,7 @@ macro_rules! gen_async_call {
 
 pub fn build_client(timeout: Duration) -> color_eyre::Result<Client> {
     let user_agent = format!(
-        "eilmeldung/{} (RSS reader; +https://github.com/christo-auer/eilmeldung",
+        "dispatch/{} (RSS reader; +https://github.com/gwicho38/dispatch",
         env!("CARGO_PKG_VERSION")
     );
     let builder = ClientBuilder::new()

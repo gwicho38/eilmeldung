@@ -1,11 +1,9 @@
 use std::collections::VecDeque;
 
+use crate::prelude::*;
 use chrono::{DateTime, Utc};
 use ratatui::prelude::*;
 use ratatui::style::Color;
-use ratatui::widgets::Paragraph;
-
-use crate::prelude::*;
 
 /// A single headline in the ticker queue.
 #[derive(Debug, Clone)]
@@ -15,12 +13,17 @@ pub struct TickerItem {
     #[allow(dead_code)] // planned for ticker display
     pub feed_name: String,
     pub title: String,
+    pub summary: Option<String>,
     pub url: String,
     #[allow(dead_code)] // planned for mark-as-read in v2
     pub article_id: Option<news_flash::models::ArticleID>,
     #[allow(dead_code)] // planned for time display in v2
     pub published: Option<DateTime<Utc>>,
 }
+
+/// Speed presets mapping speed level (1-10) to chars-per-tick as a fraction.
+/// At 60 FPS chyron tick rate: level 1 ≈ 10 chars/sec (advance every ~6 frames = 100ms).
+const SPEED_TABLE: [f32; 10] = [0.17, 0.25, 0.33, 0.5, 0.67, 1.0, 1.5, 2.0, 3.0, 5.0];
 
 /// Mutable state for the scrolling ticker.
 pub struct TickerState {
@@ -31,6 +34,8 @@ pub struct TickerState {
     pub paused: bool,
     pub highlight_index: usize,
     pub current_category_index: usize,
+    /// Fractional accumulator for sub-character scrolling.
+    scroll_accumulator: f32,
 }
 
 impl TickerState {
@@ -43,13 +48,20 @@ impl TickerState {
             paused: false,
             highlight_index: 0,
             current_category_index: 0,
+            scroll_accumulator: 0.0,
         }
     }
 
-    /// Advance the scroll offset by `speed` characters. Called on each tick when not paused.
+    /// Advance the scroll offset using fractional accumulation. Called on each tick when not paused.
     pub fn advance(&mut self) {
         if !self.paused && !self.queue.is_empty() {
-            self.scroll_offset += self.speed as usize;
+            let rate = SPEED_TABLE[(self.speed as usize - 1).min(SPEED_TABLE.len() - 1)];
+            self.scroll_accumulator += rate;
+            let whole = self.scroll_accumulator as usize;
+            if whole > 0 {
+                self.scroll_offset += whole;
+                self.scroll_accumulator -= whole as f32;
+            }
         }
     }
 
@@ -93,9 +105,10 @@ impl TickerState {
     /// When scroll_offset exceeds this, the item has scrolled off screen.
     pub fn first_item_width(&self) -> usize {
         if let Some(item) = self.queue.front() {
-            // "[CATEGORY] Title" + separator " ███ "
+            // "[CATEGORY] Title | summary" + separator " ███ "
             let tag = format!("[{}] ", item.category);
-            tag.len() + item.title.len() + 5 // 5 = " ███ " separator
+            let summary_len = item.summary.as_ref().map(|s| 3 + s.len()).unwrap_or(0); // 3 = " | "
+            tag.len() + item.title.len() + summary_len + 5 // 5 = " ███ " separator
         } else {
             0
         }
@@ -132,16 +145,11 @@ impl TickerState {
     }
 }
 
-/// Render the scrolling ticker line.
+/// Render the scrolling ticker via direct buffer cell writes.
 ///
-/// Format: `[CATEGORY] Title ███ [CATEGORY] Title ███ ...`
-/// The separator is 3 block characters.
-pub fn render_ticker(
-    area: Rect,
-    buf: &mut Buffer,
-    state: &TickerState,
-    config: &Config,
-) {
+/// Bypasses Paragraph widget overhead for minimal per-frame allocation.
+/// Format: `[CATEGORY] Title | summary ███ [CATEGORY] Title | summary ███ ...`
+pub fn render_ticker(area: Rect, buf: &mut Buffer, state: &TickerState, config: &Config) {
     if state.queue.is_empty() {
         let msg = Line::from(Span::styled(
             "No new headlines. Press s to sync.",
@@ -151,40 +159,75 @@ pub fn render_ticker(
         return;
     }
 
-    let separator = "███";
-    let mut spans: Vec<Span<'_>> = Vec::new();
+    let width = area.width as usize;
+    if width == 0 || area.height == 0 {
+        return;
+    }
+
+    let styled_chars = build_styled_chars(state);
+    let total_len = styled_chars.len();
+    let y = area.y;
+
+    for c in 0..width {
+        let content_idx = state.scroll_offset + c;
+        if content_idx < total_len {
+            let (ch, style) = styled_chars[content_idx];
+            if let Some(cell) = buf.cell_mut(Position::new(area.x + c as u16, y)) {
+                cell.set_char(ch).set_style(style);
+            }
+        }
+    }
+}
+
+/// Flatten the ticker queue into a vector of (char, Style) pairs for direct buffer rendering.
+fn build_styled_chars(state: &TickerState) -> Vec<(char, Style)> {
+    let separator = " ███ ";
+    let mut chars = Vec::new();
 
     for (idx, item) in state.queue.iter().enumerate() {
-        if !spans.is_empty() {
-            spans.push(Span::styled(
-                format!(" {} ", separator),
-                Style::default().fg(Color::DarkGray),
-            ));
+        if idx > 0 {
+            let sep_style = Style::default().fg(Color::DarkGray);
+            for ch in separator.chars() {
+                chars.push((ch, sep_style));
+            }
         }
 
-        let tag_style = if state.paused && idx == state.highlight_index {
+        let is_highlighted = state.paused && idx == state.highlight_index;
+
+        let tag_style = if is_highlighted {
             Style::default().fg(Color::Black).bg(item.color).bold()
         } else {
             Style::default().fg(item.color).bold()
         };
 
-        let title_style = if state.paused && idx == state.highlight_index {
+        let title_style = if is_highlighted {
             Style::default().fg(Color::Black).bg(Color::White)
         } else {
             Style::default().fg(Color::White)
         };
 
-        spans.push(Span::styled(format!("[{}] ", item.category), tag_style));
-        spans.push(Span::styled(item.title.clone(), title_style));
+        for ch in format!("[{}] ", item.category).chars() {
+            chars.push((ch, tag_style));
+        }
+        for ch in item.title.chars() {
+            chars.push((ch, title_style));
+        }
+
+        if let Some(summary) = &item.summary {
+            let pipe_style = Style::default().fg(Color::DarkGray);
+            for ch in " | ".chars() {
+                chars.push((ch, pipe_style));
+            }
+            let summary_style = if is_highlighted {
+                Style::default().fg(Color::Black).bg(Color::Gray)
+            } else {
+                Style::default().fg(Color::Gray)
+            };
+            for ch in summary.chars() {
+                chars.push((ch, summary_style));
+            }
+        }
     }
 
-    // Build the full text line and handle horizontal scrolling
-    let full_line = Line::from(spans);
-
-    // For scrolling: we render from scroll_offset onward
-    // Ratatui's Paragraph with scroll handles this
-    let paragraph = Paragraph::new(full_line)
-        .scroll((0, state.scroll_offset.min(u16::MAX as usize) as u16));
-
-    paragraph.render(area, buf);
+    chars
 }

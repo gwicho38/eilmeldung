@@ -24,7 +24,7 @@ pub mod prelude {
     pub use super::input_config::{ChyronInputConfig, InputConfig};
     pub use super::login_configuration::LoginConfiguration;
     pub use super::paths::{CONFIG_FILE, PROJECT_DIRS};
-    pub use super::resolve_eilmeldung_config_dir;
+    pub use super::resolve_dispatch_config_dir;
     pub use super::share_target::ShareTarget;
     pub use super::theme::Theme;
     pub use super::{ArticleContentType, ArticleScope, Config, ConfigError, load_config};
@@ -121,7 +121,7 @@ pub struct ChyronConfig {
 impl Default for ChyronConfig {
     fn default() -> Self {
         Self {
-            default_speed: 5,
+            default_speed: 1,
             mark_as_read: true,
             category_colors: HashMap::new(),
             input_config: ChyronInputConfig::default(),
@@ -382,18 +382,18 @@ fn try_path(path: &Path) -> Option<PathBuf> {
     Some(PathBuf::from(path))
 }
 
-fn extend_eilmeldung(prefix: Option<&str>, path: &str) -> PathBuf {
+fn extend_dispatch(prefix: Option<&str>, path: &str) -> PathBuf {
     let mut path_buf = PathBuf::from(path);
 
     if let Some(prefix) = prefix {
         path_buf.push(prefix);
     };
 
-    path_buf.push("eilmeldung");
+    path_buf.push("dispatch");
     path_buf
 }
 
-pub fn resolve_eilmeldung_config_dir(cli_args: &CliArgs) -> PathBuf {
+pub fn resolve_dispatch_config_dir(cli_args: &CliArgs) -> PathBuf {
     // CLI has priority
     if let Some(cli_config_path) = cli_args.config_dir() {
         return PathBuf::from(cli_config_path);
@@ -402,12 +402,12 @@ pub fn resolve_eilmeldung_config_dir(cli_args: &CliArgs) -> PathBuf {
     // first try XDG_CONFIG_HOME
     env::var("XDG_CONFIG_HOME")
         .ok()
-        .and_then(|path| try_path(&extend_eilmeldung(None, &path)))
-        // or $HOME/.config/eilmeldung
+        .and_then(|path| try_path(&extend_dispatch(None, &path)))
+        // or $HOME/.config/dispatch
         .or_else(|| {
             env::var("HOME")
                 .ok()
-                .and_then(|home_path| try_path(&extend_eilmeldung(Some(".config"), &home_path)))
+                .and_then(|home_path| try_path(&extend_dispatch(Some(".config"), &home_path)))
         })
         // or OS-dependent path
         .or_else(|| try_path(PROJECT_DIRS.config_dir()))

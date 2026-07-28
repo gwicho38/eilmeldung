@@ -6,8 +6,8 @@ if [ -z "$1"]; then
 fi
 
 TAG="$1"
-GITURL="https://github.com/christo-auer/eilmeldung/archive/refs/tags/${TAG}.tar.gz"
+GITURL="https://github.com/christo-auer/dispatch/archive/refs/tags/${TAG}.tar.gz"
 
 SHA256SUM=$(curl -L --silent "${GITURL}" | sha256sum --binary | awk '{ print $1; }')
 
-sed -i "s/sha256 .*/sha256 \"${SHA256SUM}\"/" ./HomebrewFormula/eilmeldung.rb 
+sed -i "s/sha256 .*/sha256 \"${SHA256SUM}\"/" ./HomebrewFormula/dispatch.rb 

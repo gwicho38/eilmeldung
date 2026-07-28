@@ -1545,6 +1545,65 @@ dependencies = [
 ]
 
 [[package]]
+name = "dispatch"
+version = "1.1.0"
+dependencies = [
+ "arboard",
+ "chrono",
+ "claims",
+ "clap",
+ "color-eyre",
+ "config",
+ "derive",
+ "directories",
+ "env_logger",
+ "futures",
+ "fuzzy-matcher",
+ "getset",
+ "htmd",
+ "htmlescape",
+ "if-watch",
+ "image",
+ "indexmap 2.13.0",
+ "inquire",
+ "itertools 0.14.0",
+ "libc",
+ "log",
+ "logos",
+ "news-flash",
+ "once_cell",
+ "openssl",
+ "parse_datetime",
+ "percent-encoding",
+ "ratatui 0.30.0",
+ "ratatui-image",
+ "ratatui-textarea",
+ "regex",
+ "reqwest",
+ "rstest",
+ "serde",
+ "serde_assert",
+ "serde_json",
+ "serde_toml",
+ "shell-words",
+ "strfmt",
+ "string_manipulation_utf8",
+ "strum 0.27.2",
+ "termimad",
+ "text-splitter",
+ "thiserror 2.0.18",
+ "throbber-widgets-tui",
+ "tokio",
+ "toml",
+ "tui-logger",
+ "tui-markdown",
+ "tui-prompts",
+ "tui-tree-widget",
+ "url",
+ "webbrowser",
+]
+
+[[package]]
 name = "dispatch2"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1635,65 +1694,6 @@ name = "dyn-clone"
 version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0881ea181b1df73ff77ffaaf9c7544ecc11e82fba9b5f27b262a3c73a332555"
-
-[[package]]
-name = "eilmeldung"
-version = "1.1.0"
-dependencies = [
- "arboard",
- "chrono",
- "claims",
- "clap",
- "color-eyre",
- "config",
- "derive",
- "directories",
- "env_logger",
- "futures",
- "fuzzy-matcher",
- "getset",
- "htmd",
- "htmlescape",
- "if-watch",
- "image",
- "indexmap 2.13.0",
- "inquire",
- "itertools 0.14.0",
- "libc",
- "log",
- "logos",
- "news-flash",
- "once_cell",
- "openssl",
- "parse_datetime",
- "percent-encoding",
- "ratatui 0.30.0",
- "ratatui-image",
- "ratatui-textarea",
- "regex",
- "reqwest",
- "rstest",
- "serde",
- "serde_assert",
- "serde_json",
- "serde_toml",
- "shell-words",
- "strfmt",
- "string_manipulation_utf8",
- "strum 0.27.2",
- "termimad",
- "text-splitter",
- "thiserror 2.0.18",
- "throbber-widgets-tui",
- "tokio",
- "toml",
- "tui-logger",
- "tui-markdown",
- "tui-prompts",
- "tui-tree-widget",
- "url",
- "webbrowser",
-]
 
 [[package]]
 name = "either"

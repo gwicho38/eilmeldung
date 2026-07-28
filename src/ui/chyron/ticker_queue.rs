@@ -4,8 +4,8 @@ use log::{debug, trace};
 use news_flash::models::{ArticleFilter, CategoryID, FeedID, Read as NfRead};
 use ratatui::style::Color;
 
-use crate::prelude::*;
 use super::ticker::TickerItem;
+use crate::prelude::*;
 
 /// Category metadata for round-robin cycling.
 pub struct CategoryInfo {
@@ -142,7 +142,7 @@ pub async fn build_category_list(
     }
 
     // Sort by unread count descending so categories with most unread are cycled first
-    result.sort_by(|a, b| b.unread_count.cmp(&a.unread_count));
+    result.sort_by_key(|b| std::cmp::Reverse(b.unread_count));
     result
 }
 
@@ -175,18 +175,31 @@ pub async fn fetch_category_headlines(
     articles
         .into_iter()
         .take(limit)
-        .map(|article| TickerItem {
-            category: category.name.clone(),
-            color: category.color,
-            feed_name: String::new(),
-            title: article.title.clone().unwrap_or_default(),
-            url: article
-                .url
-                .as_ref()
-                .map(|u| u.to_string())
-                .unwrap_or_default(),
-            article_id: Some(article.article_id.clone()),
-            published: Some(article.date),
+        .map(|article| {
+            // Strip HTML tags from summary and truncate for ticker display
+            let summary = article.summary.as_ref().map(|s| {
+                let plain = strip_html_tags(s);
+                if plain.chars().count() > 200 {
+                    let truncated: String = plain.chars().take(197).collect();
+                    format!("{truncated}...")
+                } else {
+                    plain
+                }
+            });
+            TickerItem {
+                category: category.name.clone(),
+                color: category.color,
+                feed_name: String::new(),
+                title: article.title.clone().unwrap_or_default(),
+                summary,
+                url: article
+                    .url
+                    .as_ref()
+                    .map(|u| u.to_string())
+                    .unwrap_or_default(),
+                article_id: Some(article.article_id.clone()),
+                published: Some(article.date),
+            }
         })
         .collect()
 }
@@ -227,4 +240,20 @@ pub async fn refill_queue(
             queue.push_back(item);
         }
     }
+}
+
+/// Simple HTML tag stripper for converting RSS summary HTML to plain text.
+fn strip_html_tags(html: &str) -> String {
+    let mut result = String::with_capacity(html.len());
+    let mut in_tag = false;
+    for ch in html.chars() {
+        match ch {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => result.push(ch),
+            _ => {}
+        }
+    }
+    // Collapse whitespace runs into single spaces
+    result.split_whitespace().collect::<Vec<_>>().join(" ")
 }

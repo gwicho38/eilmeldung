@@ -1,8 +1,10 @@
+#![allow(dead_code)] // module temporarily unused while category grid is commented out
+
 use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders, Paragraph};
 
-use crate::prelude::*;
 use super::ticker_queue::CategoryInfo;
+use crate::prelude::*;
 
 /// Render a responsive grid of category summary cells.
 ///
@@ -15,8 +17,8 @@ pub fn render_chyron_category_grid(
     _config: &Config,
 ) {
     if categories.is_empty() {
-        let msg = Paragraph::new("No categories found. Press s to sync.")
-            .alignment(Alignment::Center);
+        let msg =
+            Paragraph::new("No categories found. Press s to sync.").alignment(Alignment::Center);
         msg.render(area, buf);
         return;
     }
@@ -60,11 +62,7 @@ pub fn render_chyron_category_grid(
     }
 }
 
-fn render_category_cell(
-    area: Rect,
-    buf: &mut Buffer,
-    category: &CategoryInfo,
-) {
+fn render_category_cell(area: Rect, buf: &mut Buffer, category: &CategoryInfo) {
     let block = Block::default()
         .borders(Borders::ALL)
         .border_style(Style::default().fg(category.color))
@@ -82,16 +80,15 @@ fn render_category_cell(
 
     // Line 1: unread count
     let count_text = format!("{} unread", category.unread_count);
-    let count_line = Line::from(Span::styled(
-        count_text,
-        Style::default().fg(Color::White),
-    ));
+    let count_line = Line::from(Span::styled(count_text, Style::default().fg(Color::White)));
     if inner.height >= 1 {
         count_line.render(Rect::new(inner.x, inner.y, inner.width, 1), buf);
     }
 
     // Line 2: most recent headline (truncated)
-    if inner.height >= 2 && let Some(headline) = &category.latest_headline {
+    if inner.height >= 2
+        && let Some(headline) = &category.latest_headline
+    {
         let truncated = truncate_str(headline, inner.width as usize);
         let headline_line = Line::from(Span::styled(
             truncated,

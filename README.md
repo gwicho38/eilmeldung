@@ -1,19 +1,19 @@
-- 📢 Stay up-to-date! Subscribe to the [eilmeldung release atom feed](https://github.com/christo-auer/eilmeldung/releases.atom)! Press `c e` in eilmeldung to automatically add the feed!
-- 🤖 Want to use your **AI/LLM chatbot with eilmeldung** to select and summarize articles? Or do you want eilmeldung to stay clear of all this AI fuzz? Take part in the [survey (demo inside)](https://github.com/christo-auer/eilmeldung/issues/197) and let me know what you think!
+- 📢 Stay up-to-date! Subscribe to the [dispatch release atom feed](https://github.com/christo-auer/dispatch/releases.atom)! Press `c e` in dispatch to automatically add the feed!
+- 🤖 Want to use your **AI/LLM chatbot with dispatch** to select and summarize articles? Or do you want dispatch to stay clear of all this AI fuzz? Take part in the [survey (demo inside)](https://github.com/christo-auer/dispatch/issues/197) and let me know what you think!
 
 
-![Logo of eilmeldung](docs/images/logo.png) 
+![Logo of dispatch](docs/images/logo.png) 
   
 
-![Screenshot of eilmeldung](docs/images/hero-shot.png) 
+![Screenshot of dispatch](docs/images/hero-shot.png) 
 
-*eilmeldung* is a *TUI RSS reader* based on the awesome [news-flash](https://gitlab.com/news-flash/news_flash) library.  
+*dispatch* is a *TUI RSS reader* based on the awesome [news-flash](https://gitlab.com/news-flash/news_flash) library.  
 - *fast* in every aspect: non-blocking terminal user interface, (neo)vim-inspired keybindings, instant start-up and no clutter
-- *stands* on the shoulder of *giants*: based on the news-flash library, *eilmeldung* supports many RSS providers, is efficient and reliable
+- *stands* on the shoulder of *giants*: based on the news-flash library, *dispatch* supports many RSS providers, is efficient and reliable
 - *powerful* and yet *easy to use out-of-the-box*: sane defaults which work for most, and yet configurable to meet anyone's requirements, from keybindings to colors, from displayed content to RSS provider
 - read news like a pro: filter and search news with an easy-to-learn powerful *query language*, activate *zen mode* to focus on the article content and nothing else
 
-*eilmeldung* is German for *breaking news*
+*dispatch* is German for *breaking news*
 
 ---
 
@@ -48,9 +48,9 @@ This video demonstrates
 
 **Quick install:**
 
-- **Homebrew**: `brew tap christo-auer/eilmeldung  https://github.com/christo-auer/eilmeldung && brew install eilmeldung`
-- **Arch (AUR)**: `paru -S eilmeldung` or `yay -S eilmeldung`
-- **Cargo**: `cargo install eilmeldung` (you need to install [build dependencies](docs/installation.md) first!)
+- **Homebrew**: `brew tap christo-auer/dispatch  https://github.com/christo-auer/dispatch && brew install dispatch`
+- **Arch (AUR)**: `paru -S dispatch` or `yay -S dispatch`
+- **Cargo**: `cargo install dispatch` (you need to install [build dependencies](docs/installation.md) first!)
 
 **Important**: You need a [Nerd Font](https://github.com/ryanoasis/nerd-fonts) compatible font/terminal for icons to display correctly!
 
@@ -60,8 +60,8 @@ For detailed installation instructions including Nix/Home Manager setup, see **[
 
 # Quick Start
 
-1. **Install** eilmeldung (see above)
-2. **Run** `eilmeldung` - you'll be guided through the initial setup
+1. **Install** dispatch (see above)
+2. **Run** `dispatch` - you'll be guided through the initial setup
 3. **Choose a provider** (select "Local" if you're new to RSS)
 4. **Add feeds** with `c f` or import an OPML file with `:importopml path/to/file.opml`
 5. **Sync** your feeds with `s`
@@ -114,7 +114,7 @@ Complete documentation is available in the `docs/` directory:
 
 # Alternatives
 
-Of course, there are many awesome alternatives to *eilmeldung*. Check them out!
+Of course, there are many awesome alternatives to *dispatch*. Check them out!
 
 - [newsboat](https://newsboat.org/) is the battle-proven classic
 - [feedr](https://github.com/bahdotsh/feedr) is a feature-rich terminal-based RSS feed reader written in Rust
@@ -130,7 +130,7 @@ Of course, there are many awesome alternatives to *eilmeldung*. Check them out!
 
 See [news_flash_gtk for all supported providers](https://gitlab.com/news-flash/news_flash_gtk). 
 
-### Does eilmeldung support smart folders?
+### Does dispatch support smart folders?
 
 Yes! Use queries in your feed list configuration. Example:
 
@@ -175,11 +175,11 @@ Checkout [FAQ](docs/faq.md#features--capabilities)!
 
 ## Standing on the Shoulders of Giants
 
-*eilmeldung* was inspired by other awesome programs and libraries:
+*dispatch* was inspired by other awesome programs and libraries:
 
 - [news-flash](https://gitlab.com/news-flash/news_flash) library and [news-flash GTK](https://gitlab.com/news-flash/news_flash_gtk), a modern Gnome/GTK RSS reader, both implemented in rust
 - [newsboat](https://newsboat.org/) which has been my TUI RSS reader of choice for many years
-- [spotify-player](https://github.com/aome510/spotify-player), a TUI spotify music player written in rust. In particular, the theming system and how input is handled has been a great inspiration for *eilmeldung*
+- [spotify-player](https://github.com/aome510/spotify-player), a TUI spotify music player written in rust. In particular, the theming system and how input is handled has been a great inspiration for *dispatch*
 - [vifm](https://vifm.info/), [neomutt](https://neomutt.org/) with [notmuch](https://notmuchmail.org/) inspired the filtering and article query systems
 - [neovim](https://neovim.io/) and [vim](https://www.vim.org/) for their philosophy on user input
 - [ratatui](https://ratatui.rs/) and all its supporting libraries for creating the TUI
@@ -196,7 +196,7 @@ This project was built as an experiment in learning Rust through LLM use. LLMs w
 
 Contributions are welcome! Please feel free to:
 
-- Report bugs or request features via [GitHub Issues](https://github.com/christo-auer/eilmeldung/issues)
+- Report bugs or request features via [GitHub Issues](https://github.com/christo-auer/dispatch/issues)
 - Submit pull requests
 - Improve documentation
 - Share your configuration examples

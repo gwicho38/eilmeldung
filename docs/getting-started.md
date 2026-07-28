@@ -1,6 +1,6 @@
-# Getting Started with eilmeldung
+# Getting Started with dispatch
 
-This guide will help you set up eilmeldung and learn the basics of using it effectively.
+This guide will help you set up dispatch and learn the basics of using it effectively.
 
 ---
 
@@ -20,7 +20,7 @@ This guide will help you set up eilmeldung and learn the basics of using it effe
 
 ## First Launch
 
-Once installed, run `eilmeldung` to begin. On first launch, you'll be guided through the setup process.
+Once installed, run `dispatch` to begin. On first launch, you'll be guided through the setup process.
 
 ### Getting Help
 
@@ -28,7 +28,7 @@ Press `?` at any time to see all available key bindings. You can also press `/` 
 
 ### Command Line
 
-Before we begin: `eilmeldung` has a powerful command line which you can open with `:`. All actions you can trigger in `eilmeldung` are commands and key bindings are just executing one or more commands in the background. Some commands also just open the command line with a predefined command.
+Before we begin: `dispatch` has a powerful command line which you can open with `:`. All actions you can trigger in `dispatch` are commands and key bindings are just executing one or more commands in the background. Some commands also just open the command line with a predefined command.
 
 **Tip**: Press `Tab` in the command line to trigger autocomplete and see helpful suggestions!
 
@@ -71,7 +71,7 @@ After setup, you'll want to add some feeds and organize them:
 Instead of manually adding feeds and categories, you can also import an OPML file. An OPML file contains all the categories and feeds you have defined in another RSS reader or provider:
 
 - Export an OPML file from your current provider and save the OPML file somewhere in your home directory.
-- In `eilmeldung`, open the command line (`:`) and enter `importopml path/to/your/feeds.opml` and press enter.
+- In `dispatch`, open the command line (`:`) and enter `importopml path/to/your/feeds.opml` and press enter.
 
 **Hint**: You can also export an OPML file via `exportopml path/to/your/feeds.opml`
 
@@ -79,7 +79,7 @@ Instead of manually adding feeds and categories, you can also import an OPML fil
 
 ## Learning the Interface
 
-eilmeldung has three main panels:
+dispatch has three main panels:
 
 1. **Feed List** (left): Shows your feeds, categories, tags, and custom queries (this is *customizable*!)
 2. **Article List** (top right): Displays articles from the selected feed/tag/query

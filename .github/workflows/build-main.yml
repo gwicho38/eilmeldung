@@ -134,20 +134,20 @@ jobs:
 
       - name: Create package directory
         run: |
-          mkdir -p package/eilmeldung
-          cp target/${{ matrix.target }}/release/eilmeldung package/eilmeldung/
-          cp -r examples package/eilmeldung/
+          mkdir -p package/dispatch
+          cp target/${{ matrix.target }}/release/dispatch package/dispatch/
+          cp -r examples package/dispatch/
 
       - name: Create tarball
         run: |
           cd package
-          tar -czf eilmeldung-${{ matrix.target }}-latest.tar.gz eilmeldung/
+          tar -czf dispatch-${{ matrix.target }}-latest.tar.gz dispatch/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eilmeldung-${{ matrix.target }}-latest
-          path: package/eilmeldung-${{ matrix.target }}-latest.tar.gz
+          name: dispatch-${{ matrix.target }}-latest
+          path: package/dispatch-${{ matrix.target }}-latest.tar.gz
           retention-days: 30
 
 
@@ -221,18 +221,18 @@ jobs:
 
       - name: Create package directory
         run: |
-          mkdir -p package/eilmeldung
-          cp target/${{ matrix.target }}/release/eilmeldung package/eilmeldung/
-          cp -r examples package/eilmeldung/
+          mkdir -p package/dispatch
+          cp target/${{ matrix.target }}/release/dispatch package/dispatch/
+          cp -r examples package/dispatch/
 
       - name: Create tarball
         run: |
           cd package
-          tar -czf eilmeldung-${{ matrix.target }}-latest.tar.gz eilmeldung/
+          tar -czf dispatch-${{ matrix.target }}-latest.tar.gz dispatch/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: eilmeldung-${{ matrix.target }}-latest
-          path: package/eilmeldung-${{ matrix.target }}-latest.tar.gz
+          name: dispatch-${{ matrix.target }}-latest
+          path: package/dispatch-${{ matrix.target }}-latest.tar.gz
           retention-days: 30

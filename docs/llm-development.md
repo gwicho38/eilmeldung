@@ -1,6 +1,6 @@
 # On the use of LLMs in this Project
 
-This document explains why and how LLMs were used in the development of eilmeldung, and shares lessons learned from this experiment in learning Rust through LLM assistance.
+This document explains why and how LLMs were used in the development of dispatch, and shares lessons learned from this experiment in learning Rust through LLM assistance.
 
 ---
 
@@ -33,7 +33,7 @@ Consider this analogy I sometimes use with my students: You want to learn to swi
 
 Programming is no different. Yet LLMs make it tempting to skip the struggle entirely. To be fair, the same argument applies to any passive learning method (like YouTube videos or classical lectures). However, never has this approach of purely conceptual learning been so alluring as with LLMs.
 
-That said, LLMs, it seems at the moment, are here to stay. Knowing how to use them (and when not) is a vital ability which already plays a certain role in programming. For this reason I am incorporating "developing using LLMs" into my programming course ("Advanced topics in Java"). In order to make sure to really understand what I am talking about, I needed to apply LLMs to *learn a new programming language* myself. And this project *eilmeldung* is the result of this endeavour.
+That said, LLMs, it seems at the moment, are here to stay. Knowing how to use them (and when not) is a vital ability which already plays a certain role in programming. For this reason I am incorporating "developing using LLMs" into my programming course ("Advanced topics in Java"). In order to make sure to really understand what I am talking about, I needed to apply LLMs to *learn a new programming language* myself. And this project *dispatch* is the result of this endeavour.
 
 ---
 
