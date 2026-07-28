@@ -142,7 +142,7 @@ pub async fn build_category_list(
     }
 
     // Sort by unread count descending so categories with most unread are cycled first
-    result.sort_by(|a, b| b.unread_count.cmp(&a.unread_count));
+    result.sort_by_key(|b| std::cmp::Reverse(b.unread_count));
     result
 }
 
