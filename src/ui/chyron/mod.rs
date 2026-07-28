@@ -40,18 +40,13 @@ impl App {
             .constraints([
                 Constraint::Length(1), // ticker (top)
                 Constraint::Length(1), // status bar
-                Constraint::Min(0),   // category grid (fills remaining, currently hidden)
+                Constraint::Min(0),    // category grid (fills remaining, currently hidden)
                 Constraint::Length(1), // help bar
             ])
             .areas(area);
 
         // Ticker (top position)
-        ticker::render_ticker(
-            ticker_area,
-            buf,
-            &self.chyron_state.ticker,
-            &self.config,
-        );
+        ticker::render_ticker(ticker_area, buf, &self.chyron_state.ticker, &self.config);
 
         // Status bar
         status_bar::render_chyron_status_bar(

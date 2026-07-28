@@ -52,10 +52,7 @@ impl Widget for &mut App {
         let (articles_constraint_height, article_content_constraint_height) =
             if let Some(override_height) = self.articles_height_override {
                 // User is dragging the border — use absolute heights
-                (
-                    Constraint::Length(override_height),
-                    Constraint::Min(0),
-                )
+                (Constraint::Length(override_height), Constraint::Min(0))
             } else {
                 match self.state {
                     AppState::FeedSelection | AppState::ArticleSelection => (
@@ -118,8 +115,7 @@ impl Widget for &mut App {
         };
 
         if self.config.show_top_bar {
-            let dispatch_span =
-                Span::styled("  dispatch  ", self.config.theme.statusbar());
+            let dispatch_span = Span::styled("  dispatch  ", self.config.theme.statusbar());
 
             // fill top line with status bar color
             Block::default()

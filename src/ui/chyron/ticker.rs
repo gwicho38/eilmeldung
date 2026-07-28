@@ -1,9 +1,9 @@
 use std::collections::VecDeque;
 
+use crate::prelude::*;
 use chrono::{DateTime, Utc};
 use ratatui::prelude::*;
 use ratatui::style::Color;
-use crate::prelude::*;
 
 /// A single headline in the ticker queue.
 #[derive(Debug, Clone)]
@@ -149,12 +149,7 @@ impl TickerState {
 ///
 /// Bypasses Paragraph widget overhead for minimal per-frame allocation.
 /// Format: `[CATEGORY] Title | summary ███ [CATEGORY] Title | summary ███ ...`
-pub fn render_ticker(
-    area: Rect,
-    buf: &mut Buffer,
-    state: &TickerState,
-    config: &Config,
-) {
+pub fn render_ticker(area: Rect, buf: &mut Buffer, state: &TickerState, config: &Config) {
     if state.queue.is_empty() {
         let msg = Line::from(Span::styled(
             "No new headlines. Press s to sync.",

@@ -68,7 +68,11 @@ impl MessageReceiver for InputCommandGenerator {
     }
 }
 impl InputCommandGenerator {
-    pub fn new(config: Arc<Config>, message_sender: UnboundedSender<Message>, mode: AppMode) -> Self {
+    pub fn new(
+        config: Arc<Config>,
+        message_sender: UnboundedSender<Message>,
+        mode: AppMode,
+    ) -> Self {
         Self {
             config,
             message_sender,
@@ -174,10 +178,14 @@ impl InputCommandGenerator {
 
         let command = key.as_ref().and_then(|key| {
             let single_key_seq = KeySequence { keys: vec![*key] };
-            self.active_mappings().get(&single_key_seq).and_then(|command_sequence| {
-                let first = command_sequence.commands.first();
-                first.filter(|_| command_sequence.commands.len() == 1).cloned()
-            })
+            self.active_mappings()
+                .get(&single_key_seq)
+                .and_then(|command_sequence| {
+                    let first = command_sequence.commands.first();
+                    first
+                        .filter(|_| command_sequence.commands.len() == 1)
+                        .cloned()
+                })
         });
 
         match command {

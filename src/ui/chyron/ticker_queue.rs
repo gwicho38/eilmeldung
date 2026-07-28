@@ -4,8 +4,8 @@ use log::{debug, trace};
 use news_flash::models::{ArticleFilter, CategoryID, FeedID, Read as NfRead};
 use ratatui::style::Color;
 
-use crate::prelude::*;
 use super::ticker::TickerItem;
+use crate::prelude::*;
 
 /// Category metadata for round-robin cycling.
 pub struct CategoryInfo {

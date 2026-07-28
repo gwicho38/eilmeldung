@@ -26,9 +26,9 @@ use crate::prelude::*;
 use chrono::TimeDelta;
 use log::{debug, error, info, trace, warn};
 use news_flash::error::{FeedApiError, NewsFlashError};
+use ratatui::DefaultTerminal;
 use ratatui::crossterm::event::{MouseButton, MouseEventKind};
 use ratatui::prelude::Rect;
-use ratatui::DefaultTerminal;
 use std::{fmt::Display, path::Path, str::FromStr, sync::Arc, time::Duration};
 use throbber_widgets_tui::ThrobberState;
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
@@ -170,8 +170,8 @@ impl PanelAreas {
     fn is_on_horizontal_border(&self, col: u16, row: u16) -> bool {
         // The border is at the bottom edge of articles_list / top edge of article_content
         let border_row = self.articles_list.y + self.articles_list.height;
-        let in_column_range = col >= self.articles_list.x
-            && col < self.articles_list.x + self.articles_list.width;
+        let in_column_range =
+            col >= self.articles_list.x && col < self.articles_list.x + self.articles_list.width;
         row == border_row && in_column_range
     }
 }
@@ -360,8 +360,7 @@ impl App {
     ) -> color_eyre::Result<()> {
         let reader_tick_ms = 1000 / self.config.refresh_fps;
         let chyron_tick_ms: u64 = 16; // ~60 FPS for smooth chyron scrolling
-        let mut render_interval =
-            tokio::time::interval(Duration::from_millis(reader_tick_ms));
+        let mut render_interval = tokio::time::interval(Duration::from_millis(reader_tick_ms));
         debug!(
             "Command processing loop started with {}fps refresh rate",
             self.config.refresh_fps
@@ -510,9 +509,8 @@ impl App {
                     match panel {
                         Panel::ArticleList => {
                             if let Some(row_offset) = self.panel_areas.article_row_offset(row) {
-                                self.message_sender.send(Message::Event(
-                                    Event::MouseArticleClick(row_offset),
-                                ))?;
+                                self.message_sender
+                                    .send(Message::Event(Event::MouseArticleClick(row_offset)))?;
                             }
                         }
                         Panel::FeedList => {
@@ -683,7 +681,8 @@ impl MessageReceiver for App {
 
                 // Check for items that have scrolled off screen
                 if self.mode == AppMode::Chyron {
-                    while let Some(_popped) = self.chyron_state.ticker.check_and_pop_scrolled_off() {
+                    while let Some(_popped) = self.chyron_state.ticker.check_and_pop_scrolled_off()
+                    {
                         // Mark-as-read could be done here using _popped.article_id
                         // For v1, we just track them in history
                     }
@@ -860,21 +859,18 @@ impl MessageReceiver for App {
                 self.refresh_chyron_data().await;
             }
 
-            Message::Command(ChyronToggle) => {
-                match self.mode {
-                    AppMode::Reader => {
-                        self.mode = AppMode::Chyron;
-                        self.chyron_state =
-                            chyron::ChyronState::new(self.config.chyron.default_speed);
-                        self.input_command_generator.set_mode(AppMode::Chyron);
-                        self.refresh_chyron_data().await;
-                    }
-                    AppMode::Chyron => {
-                        self.mode = AppMode::Reader;
-                        self.input_command_generator.set_mode(AppMode::Reader);
-                    }
+            Message::Command(ChyronToggle) => match self.mode {
+                AppMode::Reader => {
+                    self.mode = AppMode::Chyron;
+                    self.chyron_state = chyron::ChyronState::new(self.config.chyron.default_speed);
+                    self.input_command_generator.set_mode(AppMode::Chyron);
+                    self.refresh_chyron_data().await;
                 }
-            }
+                AppMode::Chyron => {
+                    self.mode = AppMode::Reader;
+                    self.input_command_generator.set_mode(AppMode::Reader);
+                }
+            },
 
             Message::Command(ChyronPause) if self.mode == AppMode::Chyron => {
                 self.chyron_state.ticker.toggle_pause();

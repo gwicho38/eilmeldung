@@ -295,8 +295,9 @@ Create a new *Application* under your account *Settings* with the following conf
 
         match url.as_ref() {
             Some(url) => {
-                self.skin
-                    .print_text("\nNext you must authorize access by dispatch by visiting the following URL.\n");
+                self.skin.print_text(
+                    "\nNext you must authorize access by dispatch by visiting the following URL.\n",
+                );
                 self.skin.print_text(&format!("\n*{url}*\n"));
                 self.skin
                     .print_text("\n**Important**: After authorizing dispatch, you will be forwarded to a **callback URL** and your browser will show an **error** that it can't connect. \n\nThis is **expected**! \n\n**Copy** the URL from the address bar into your **clipboard** and return here.\n\n");
